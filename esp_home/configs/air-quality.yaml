@@ -1,0 +1,51 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp-s3.yaml
+
+substitutions:
+  board_name: esp-air-quality-1
+  board_comment: ESP32 Air Quality Tracker
+  board_id: $air_quality_board_1_id
+  organic_compounds_sensor_id: $organic_compounds_1_sensor_id
+  air_temperature_sensor_id: $air_temperature_1_sensor_id
+  air_pressure_sensor_id: $air_pressure_1_sensor_id
+  air_humidity_sensor_id: $air_humidity_1_sensor_id
+
+i2c:
+  sda: GPIO34
+  scl: GPIO33
+  scan: true
+  id: bus_a
+  frequency: 15khz
+
+sensor:
+  - platform: ags10
+    id: organic_compounds_sensor
+    update_interval: 15min
+    address: 0x1A
+    tvoc:
+      name: organic_compounds_sensor
+      on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($organic_compounds_sensor_id, "organic_compounds"), x, "$organic_compounds_sensor_id");
+  - platform: bme280_i2c
+    address: 0x77
+    temperature:
+      id: air_temp
+      on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($air_temperature_sensor_id, "air_temperature"), x, "$air_temperature_sensor_id");
+    pressure:
+      id: air_pressure
+      on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($air_pressure_sensor_id, "air_pressure"), x, "$air_pressure_sensor_id");
+    humidity:
+      id: air_humidity
+      on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($air_humidity_sensor_id, "air_humidity"), x, "$air_humidity_sensor_id");

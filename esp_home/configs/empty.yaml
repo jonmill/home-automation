@@ -1,0 +1,11 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp-c3.yaml
+
+preferences:
+  flash_write_interval: 5min
+
+substitutions:
+  board_name: esp-power-tv
+  board_comment: ESP32 measuring power consumption
+  board_id: $power_measure_board_tv_id 

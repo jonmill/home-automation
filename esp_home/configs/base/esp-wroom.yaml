@@ -1,0 +1,8 @@
+packages:
+  base: !include esp.yaml
+
+esp32:
+  board: wesp32
+  framework:
+    type: esp-idf
+    version: recommended

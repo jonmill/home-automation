@@ -1,0 +1,26 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp-wroom.yaml
+
+substitutions:
+  board_name: esp-daylight-1
+  board_comment: ESP32 Daylight Tracker
+  board_id: $daylight_tracker_1_board_id
+  sensor_id: $daylight_tracker_1_lux_sensor_id
+
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: false
+  id: bus_a
+
+sensor:
+  - platform: tsl2561
+    id: lux_sensor
+    name: "TSL2561 Ambient Light"
+    address: 0x39
+    update_interval: 15min
+    on_value:
+      then:
+        - lambda: |-
+            id(mqtt_event_helper_bool)(id(make_sensor_topic)($sensor_id, "lux"), id(lux_sensor).state, "$sensor_id");

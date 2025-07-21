@@ -1,0 +1,175 @@
+packages:
+  wifi: !include ./wifi.yaml
+  logging: !include ./logging.yaml
+  mqtt: !include ./mqtt.yaml
+  ota: !include ./ota.yaml
+
+globals:
+  - id: mqtt_event_helper_base
+    type: std::function<void(std::string, std::function<void(ArduinoJson::JsonObject)>)>
+    restore_value: no
+    initial_value: 'nullptr'
+
+  - id: mqtt_event_helper_str
+    type: std::function<void(std::string, std::string, std::string)>
+    restore_value: no
+    initial_value: 'nullptr'
+
+  - id: mqtt_event_helper_float
+    type: std::function<void(std::string, float, std::string)>
+    restore_value: no
+    initial_value: 'nullptr'
+
+  - id: mqtt_event_helper_bool
+    type: std::function<void(std::string, bool, std::string)>
+    restore_value: no
+    initial_value: 'nullptr'
+
+  - id: mqtt_event_helper_logging
+    type: std::function<void(std::string, std::string, int, std::string)>
+    restore_value: no
+    initial_value: 'nullptr'
+
+  - id: mqtt_heartbeat
+    type: std::function<void()>
+    restore_value: no
+    initial_value: 'nullptr'
+
+  - id: make_board_topic
+    type: std::function<std::string(std::string)>
+    restore_value: no
+    initial_value: '[](std::string topicSuffix) { return "board/" + std::to_string($board_id) + "/" + topicSuffix; }'
+
+  - id: make_sensor_topic
+    type: std::function<std::string(int, std::string)>
+    restore_value: no
+    initial_value: '[](int sensorId, std::string topicSuffix) { return "board/" + std::to_string($board_id) + "/sensor/" + std::to_string(sensorId) + "/" + topicSuffix; }'
+
+
+esphome:
+  name: $board_name
+  comment: $board_comment
+  platformio_options:
+    board_build.flash_mode: dio
+  project:
+    name: "jonmill.home_automation"
+    version: "3.0.0-beta-2"
+  on_boot:
+    then:
+      - lambda: |-
+          id(mqtt_event_helper_base) = [](std::string topic, std::function<void(ArduinoJson::JsonObject)> builder) {
+            if (id(mqtt_client).is_connected() == false)
+            {
+              return;
+            }
+
+            auto now = id(sntp_time).now();
+            int ms = millis() % 1000;
+            char timestamp[30];
+            snprintf(timestamp, sizeof(timestamp), "%04d-%02d-%02dT%02d:%02d:%02d.%03dZ",
+                     now.year, now.month, now.day_of_month,
+                     now.hour, now.minute, now.second,
+                     ms);
+
+            std::function<void(ArduinoJson::JsonObject)> json_builder = [=](ArduinoJson::JsonObject root) {
+              root["time"] = timestamp;
+              root["source"] = $board_id;
+              root["content_type"] = "application/json; charset=utf-8";
+              builder(root);
+            };
+
+            id(mqtt_client).publish_json(topic, json_builder, 1, false);
+          };
+
+          id(mqtt_heartbeat) = []() {
+            id(mqtt_event_helper_base)(id(make_board_topic)("heartbeat"), [=](ArduinoJson::JsonObject root) {
+              root["data_next_heartbeat_in_seconds"] = 60;
+            });
+          };
+
+          id(mqtt_event_helper_logging) = [](std::string topic, std::string message, int level, std::string tag) {
+            id(mqtt_event_helper_base)(topic, [=](ArduinoJson::JsonObject root) {
+              root["data_message"] = message;
+              root["data_level"] = level;
+              root["data_tag"] = tag;
+            });
+          };
+
+          id(mqtt_event_helper_str) = [](std::string topic, std::string value, std::string data_id) {
+            id(mqtt_event_helper_base)(topic, [=](ArduinoJson::JsonObject root) {
+              root["data_value"] = value;
+              if (data_id.empty() == false)
+              {
+                root["data_id"] = data_id;
+              }
+            });
+          };
+
+          id(mqtt_event_helper_float) = [](std::string topic, float value, std::string data_id) {
+            id(mqtt_event_helper_base)(topic, [=](ArduinoJson::JsonObject root) {
+              root["data_value"] = value;
+              if (data_id.empty() == false)
+              {
+                root["data_id"] = data_id;
+              }
+            });
+          };
+
+          id(mqtt_event_helper_bool) = [](std::string topic, bool value, std::string data_id) {
+            id(mqtt_event_helper_base)(topic, [=](ArduinoJson::JsonObject root) {
+              root["data_value"] = value;
+              if (data_id.empty() == false)
+              {
+                root["data_id"] = data_id;
+              }
+            });
+          };
+
+          esphome::logger::global_logger->add_on_log_callback([](uint8_t level, const char* tag, const char* message, size_t line) {
+            if (id(mqtt_event_helper_logging)) {
+              id(mqtt_event_helper_logging)(id(make_board_topic)("logging"), message, level, tag);
+            }
+          });
+
+          id(mqtt_event_helper_str)(id(make_board_topic)("power"), std::string("BootingUp"), "");
+  on_shutdown:
+    then:
+      - lambda: |-
+          id(mqtt_event_helper_str)(id(make_board_topic)("power"), std::string("ShuttingDown"), "");
+
+safe_mode:
+  boot_is_good_after: 45s
+  num_attempts: 5
+  reboot_timeout: 5min
+
+sensor:
+  - platform: uptime
+    name: "Uptime Sensor"
+    id: uptime_sensor
+    entity_category: diagnostic
+    internal: true
+  - platform: internal_temperature
+    id: internal_temp
+    name: "Internal Temperature"
+    update_interval: 5min
+    on_value:
+      then:
+        - lambda: |-
+            id(mqtt_event_helper_float)(id(make_board_topic)("internal_temperature"), id(internal_temp).state, "");
+
+text_sensor:
+  #  Creates a sensor of the uptime of the device, in formatted days, hours, minutes and seconds
+  - platform: template
+    name: "Uptime"
+    id: uptime_txt
+    entity_category: diagnostic
+    lambda: |-
+      int seconds = (id(uptime_sensor).state);
+      return std::to_string(seconds);
+    icon: mdi:clock-start
+    #  Creates a sensor showing when the device was last restarted
+  - platform: template
+    name: 'Last Restart'
+    id: device_last_restart
+    icon: mdi:clock
+    entity_category: diagnostic

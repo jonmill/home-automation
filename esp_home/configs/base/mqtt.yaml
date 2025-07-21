@@ -1,0 +1,14 @@
+mqtt:
+  id: mqtt_client
+  broker: !secret mqtt_broker
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  client_id: $board_name
+  discovery: false
+  topic_prefix: "warbreaker"
+  on_connect:
+    then:
+      - lambda: |-
+          id(mqtt_event_helper_str)(id(make_board_topic)("mqtt"), std::string("Connected"), "");
+  idf_send_async: true
+  reboot_timeout: 5min

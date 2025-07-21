@@ -1,0 +1,129 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp-c3.yaml
+
+substitutions:
+  board_name: esp-power-tv
+  board_comment: ESP32 measuring power consumption
+  board_id: $power_measure_board_tv_id
+  sensor_update_interval: 10s
+  relay_restore_mode: RESTORE_DEFAULT_ON
+  # Current Limit in Amps. AU Plug = 10. IL, BR, EU, UK, US Plug = 16.
+  current_limit : "16"
+
+preferences:
+  flash_write_interval: 5min
+
+uart:
+  rx_pin: GPIO20
+  baud_rate: 4800
+  data_bits: 8
+  stop_bits: 1
+  parity: EVEN
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO3
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Power Button"
+    disabled_by_default: true
+    on_multi_click:
+      - timing:
+          - ON for at most 1s
+          - OFF for at least 0.2s
+        then:
+          - switch.toggle: relay
+      - timing:
+          - ON for at least 4s
+        then:
+          - button.press: Reset
+
+sensor:
+  - platform: cse7766
+    current:
+      id: current
+      filters:
+        - throttle_average: ${sensor_update_interval}
+        - lambda: if (x < 0.060) return 0.0; else return x;   #For the chip will report less than 3w power when no load is connected
+      on_value_range:
+        - above: ${current_limit}
+          then:
+            - switch.turn_off: relay
+
+    voltage:
+      id: voltage
+      filters:
+        - throttle_average: ${sensor_update_interval}
+
+    power:
+      id: power_sensor
+      filters:
+        - throttle_average: ${sensor_update_interval}
+        - lambda: if (x < 3.0) return 0.0; else return x;    #For the chip will report less than 3w power when no load is connected
+
+    energy:
+      name: "Energy"
+      id: energy
+      unit_of_measurement: kWh
+      filters:
+        - throttle: ${sensor_update_interval}
+        # Multiplication factor from W to kW is 0.001
+        - multiply: 0.001
+      on_value:
+        then:
+          - mqtt.publish_json:
+              topic: environment/power/usage
+              retain: true
+              payload: |-
+                root["time"] = id(sntp_time).now().strftime("%Y-%m-%dT%H:%M:%S") + "." + std::to_string(millis() % 1000) + "Z";
+                root["source"] = $board_id;
+                root["content_type"] = "application/json; charset=utf-8";
+                root["data_energy"] = id(energy).state;
+                root["data_current"] = id(current).state;
+                root["data_voltage"] = id(voltage).state;
+                root["data_uptime"] = id(uptime_txt).state;
+
+button:
+  - platform: restart
+    name: "Restart"
+    entity_category: config
+
+  - platform: factory_reset
+    name: "Factory Reset"
+    id: Reset
+    entity_category: config
+
+  - platform: safe_mode
+    name: "Safe Mode"
+    internal: false
+    entity_category: config
+
+switch:
+  - platform: gpio
+    name: "Switch"
+    pin: GPIO5
+    id: relay
+    restore_mode: ${relay_restore_mode}
+
+light:
+  - platform: status_led
+    name: "Status LED"
+    id: blue_led
+    disabled_by_default: true
+    pin:
+      inverted: true
+      number: GPIO6
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
+      entity_category: diagnostic
+    ssid:
+      name: "Connected SSID"
+      entity_category: diagnostic
+    mac_address:
+      name: "Mac Address"
+      entity_category: diagnostic

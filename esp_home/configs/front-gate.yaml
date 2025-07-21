@@ -1,0 +1,70 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp-wroom.yaml
+
+substitutions:
+  board_name: front-gate
+  board_comment: ESP32 monitoring front gate access and weather
+  board_id: $front_gate_board_id
+
+# 66d -> 13k
+#
+
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  id: bus_a
+  frequency: 100kHz
+
+binary_sensor:
+  - platform: gpio
+    id: contact
+    publish_initial_state: true
+    pin:
+      number: GPIO14
+
+sensor:
+  - platform: ntc
+    sensor: resistance_sensor
+    id: therm_sensor
+    calibration:
+      b_constant: 3950
+      reference_temperature: 25°C
+      reference_resistance: 10kOhm
+
+  - platform: adc
+    pin: GPIO33
+    id: source_sensor
+    attenuation: 12db
+    update_interval: never
+
+  - platform: resistance
+    id: resistance_sensor
+    sensor: source_sensor
+    configuration: DOWNSTREAM
+    resistor: 10kOhm
+    name: Resistance Sensor
+
+  - platform: bme280_i2c
+    i2c_id: bus_a
+    address: 0x76
+    temperature:
+      name: "BME280 Temperature"
+    pressure:
+      name: "BME280 Pressure"
+    humidity:
+      name: "BME280 Humidity"
+
+switch:
+  - platform: gpio
+    pin: GPIO32
+    id: ntc_vcc
+
+interval:
+  - interval: 60s
+    then:
+      - switch.turn_on: ntc_vcc
+      - delay: 30s
+      - component.update: source_sensor
+      - delay: 2s
+      - switch.turn_off: ntc_vcc

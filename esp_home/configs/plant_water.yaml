@@ -1,0 +1,63 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp-s3.yaml
+
+substitutions:
+  board_name: planter-water
+  board_comment: ESP32 monitoring planter soil moisture levels
+  board_id: $plant_water_test_board_id
+  sensor_id: $plant_water_test_sensor_id
+  water_moisture_level: '3875'
+  air_moisture_level: '4095'
+  min_voltage_level: '3300'
+  max_voltage_level: '3725'
+
+interval:
+  - interval: 15s
+    then:
+      - switch.turn_on: sm_enable
+      - delay: 200ms
+      - component.update: "moisture"
+      - switch.turn_off: sm_enable
+
+switch:
+  - platform: gpio
+    pin: GPIO8
+    name: "Soil Moisture Enable"
+    id: "sm_enable"
+  - platform: gpio
+    pin: GPIO10
+    name: "Voltage Read Enable"
+    id: "vr_enable"
+
+sensor:
+  - platform: adc
+    pin: GPIO2
+    name: "ESP Battery Level"
+    id: "battery"
+    attenuation: 11db
+    filters:
+      - calibrate_linear:
+          method: least_squares
+          datapoints:
+            - $min_voltage_level -> 0.0
+            - $max_voltage_level -> 100.0
+    on_value:
+      then:
+      - lambda: |-
+          id(mqtt_event_helper_float)("board/$board_id/battery", x, "$board_id");
+  - platform: adc
+    pin: GPIO3
+    name: "Soil Moisture Level"
+    id: moisture
+    attenuation: 0db
+    filters:
+      - calibrate_linear:
+          method: least_squares
+          datapoints:
+            - $water_moisture_level -> 0.0
+            - $air_moisture_level -> 100.0
+    on_value:
+      then:
+        - lambda: |-
+            id(mqtt_event_helper_float)("sensor/$sensor_id/soil_moisture", x, "$sensor_id");

@@ -1,0 +1,21 @@
+ota:
+- platform: esphome
+  id: board_ota
+  port: 3232
+  password: ""
+  on_begin:
+    then:
+      - lambda: |-
+          id(mqtt_event_helper_float)(id(make_board_topic)("ota"), 0.0f, "");
+  on_progress:
+    then:
+      - lambda: |-
+          id(mqtt_event_helper_float)(id(make_board_topic)("ota"), x, "");
+  on_end:
+    then:
+      - lambda: |-
+          id(mqtt_event_helper_float)(id(make_board_topic)("ota"), 100.0f, "");
+  on_error:
+    then:
+      - lambda: |-
+          id(mqtt_event_helper_float)(id(make_board_topic)("ota"), -1.0f, "");

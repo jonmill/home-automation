@@ -1,0 +1,40 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp-s3.yaml
+
+substitutions:
+  board_name: esp-display
+  board_comment: ESP32 Display
+  board_id: $plant_water_test_board_id
+  sensor_id: $plant_water_test_sensor_id
+
+# Example configuration entry
+i2c:
+  sda: 33
+  scl: 34
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x32"
+    address: 0x3C
+    lambda: |-
+      std::string date = id(sntp_time).now().strftime("%Y-%m-%d");
+      std::string time = id(sntp_time).now().strftime("%H:%M:%S");
+      it.printf(0, 0, id(my_font), id(lcdred), esphome::display::TextAlign::LEFT, date.c_str());
+      it.printf(0, 16, id(my_font), id(lcdblue), esphome::display::TextAlign::LEFT, time.c_str());
+
+font:
+  #- file: "/usr/share/fonts/open-sans/OpenSans-Bold.ttf"
+  - file: "/mnt/c/Windows/Fonts/CascadiaCode.ttf"
+    id: my_font
+    size: 8
+
+color:
+- id: lcdred
+  red: 100%
+  green: 0%
+  blue: 0%
+- id: lcdblue
+  red: 0%
+  green: 0%
+  blue: 100%

@@ -1,0 +1,32 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"         # MQTT
+      - "9001:9001"         # WebSockets (if enabled later)
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+    networks:
+      - mqtt-net
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: homeauto
+      POSTGRES_PASSWORD: homeauto
+      POSTGRES_DB: homeautomation
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - mqtt-net
+
+networks:
+  mqtt-net:
+    name: mqtt-net
+    driver: bridge

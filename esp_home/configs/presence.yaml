@@ -1,0 +1,40 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp-wroom.yaml
+
+substitutions:
+  board_name: esp-presence-1
+  board_comment: ESP32 Presence Tracker
+  board_id: $presence_board_1_id
+
+esp32_ble_tracker:
+
+binary_sensor:
+  - platform: ble_presence
+    irk: 9b7bca8c37888b24f28b48c5bb65ca60
+    name: "Jon's Apple Watch SE"
+    on_state:
+      then:
+        - mqtt.publish_json:
+            topic: security/sensor/presence/state
+            retain: true
+            payload: |-
+              root["time"] = id(sntp_time).now().strftime("%Y-%m-%dT%H:%M:%S") + "." + std::to_string(millis() % 1000) + "Z";
+              root["source"] = $board_id;
+              root["content_type"] = "application/json; charset=utf-8";
+              root["data_state"] = id(StairSideSlider).state;
+              root["data_id"] = $stair_side_slider_sensor_id;
+  - platform: ble_presence
+    irk: ccc551b52254c5c55ea02927080571fa
+    name: "Jon's iPhone 15"
+    on_state:
+      then:
+        - mqtt.publish_json:
+            topic: security/sensor/presence/state
+            retain: true
+            payload: |-
+              root["time"] = id(sntp_time).now().strftime("%Y-%m-%dT%H:%M:%S") + "." + std::to_string(millis() % 1000) + "Z";
+              root["source"] = $board_id;
+              root["content_type"] = "application/json; charset=utf-8";
+              root["data_state"] = id(StairSideSlider).state;
+              root["data_id"] = $stair_side_slider_sensor_id;

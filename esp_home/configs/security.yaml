@@ -1,0 +1,94 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp-wroom.yaml
+
+substitutions:
+  board_name: esp-security
+  board_comment: ESP32 controlling hardwired security
+  board_id: $security_board_id
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: 35
+      mode: INPUT
+    name: "TvRoomSlider"
+    id: "TvRoomSlider"
+    device_class: door
+    trigger_on_initial_state: true
+    filters:
+      - delayed_on_off: 200ms
+    on_state:
+      then:
+        - lambda: |-
+            id(mqtt_event_helper_bool)(id(make_sensor_topic)($tv_slider_sensor_id, "contact_state"), x, "$tv_slider_sensor_id");
+  - platform: gpio
+    pin:
+      number: 34
+      mode: INPUT
+    name: "FrontDoor"
+    id: "FrontDoor"
+    device_class: door
+    trigger_on_initial_state: true
+    filters:
+      - delayed_on_off: 200ms
+    on_state:
+      then:
+        - lambda: |-
+            id(mqtt_event_helper_bool)(id(make_sensor_topic)($front_door_sensor_id, "contact_state"), x, "$front_door_sensor_id");
+  - platform: gpio
+    pin:
+      number: 39
+      mode: INPUT
+    name: "InteriorGarageDoor"
+    id: "InteriorGarageDoor"
+    device_class: door
+    trigger_on_initial_state: true
+    filters:
+      - delayed_on_off: 200ms
+    on_state:
+      then:
+        - lambda: |-
+            id(mqtt_event_helper_bool)(id(make_sensor_topic)($interior_garage_door_sensor_id, "contact_state"), x, "$interior_garage_door_sensor_id");
+  - platform: gpio
+    pin:
+      number: 36
+      mode: INPUT
+    name: "DiningRoomSlider"
+    id: "DiningRoomSlider"
+    device_class: door
+    trigger_on_initial_state: true
+    filters:
+      - delayed_on_off: 200ms
+    on_state:
+      then:
+        - lambda: |-
+            id(mqtt_event_helper_bool)(id(make_sensor_topic)($dining_room_slider_sensor_id, "contact_state"), x, "$dining_room_slider_sensor_id");
+  - platform: gpio
+    pin:
+      number: 32
+      mode: INPUT_PULLUP
+    name: "StairSideSlider"
+    id: "StairSideSlider"
+    device_class: door
+    trigger_on_initial_state: true
+    filters:
+      - delayed_on_off: 200ms
+    on_state:
+      then:
+        - lambda: |-
+            id(mqtt_event_helper_bool)(id(make_sensor_topic)($stair_side_slider_sensor_id, "contact_state"), x, "$stair_side_slider_sensor_id");
+  - platform: gpio
+    pin:
+      number: 33
+      mode: INPUT_PULLUP
+    name: "ChimneySideSlider"
+    id: "ChimneySideSlider"
+    device_class: door
+    trigger_on_initial_state: true
+    filters:
+      - delayed_on_off: 200ms
+    on_state:
+      then:
+        - lambda: |-
+            id(mqtt_event_helper_bool)(id(make_sensor_topic)($chimney_side_slider_sensor_id, "contact_state"), x, "$chimney_side_slider_sensor_id");

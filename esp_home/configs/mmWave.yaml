@@ -1,0 +1,84 @@
+esp32:
+  board: wesp32
+  framework:
+    type: esp-idf
+    version: recommended
+
+esphome:
+  name: esp-mmwave
+  project:
+    name: "jonmill.home_automation"
+    version: "3.0.0-beta-2"
+
+# Enable logging
+logger:
+  level: DEBUG
+
+uart:
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 115200
+  data_bits: 8
+  stop_bits: 1
+  parity: NONE
+
+ld2420:
+
+text_sensor:
+  - platform: ld2420
+    fw_version:
+      name: LD2420 Firmware
+
+sensor:
+  - platform: ld2420
+    id: distance_sensor
+    moving_distance:
+      name : Moving Distance
+      on_value:
+        then:
+          - logger.log:
+              format: "The distance sensor reports value %.1f"
+              args: [ x ]
+
+binary_sensor:
+  - platform: ld2420
+    id: presence_sensor
+    has_target:
+      name: Presence
+      on_state:
+        then:
+          - logger.log:
+              format: "The presence sensor reports value %d"
+              args: [ x ]
+
+select:
+  - platform: ld2420
+    operating_mode:
+      name: Operating Mode
+
+number:
+  - platform: ld2420
+    presence_timeout:
+      name: Detection Presence Timeout
+    min_gate_distance:
+      name: Detection Gate Minimum
+    max_gate_distance:
+      name: Detection Gate Maximum
+    # See "Number" section below for detail
+    gate_select:
+      name: Select Gate to Set
+    still_threshold:
+      name: Set Still Threshold Value
+    move_threshold:
+      name: Set Move Threshold Value
+
+button:
+  - platform: ld2420
+    apply_config:
+      name: Apply Config
+    factory_reset:
+      name: Factory Reset
+    restart_module:
+      name: Restart Module
+    revert_config:
+      name: Undo Edits

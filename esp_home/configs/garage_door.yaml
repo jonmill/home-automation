@@ -1,0 +1,28 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp.yaml
+  wifi: !include ./base/wifi.yaml
+  logging: !include ./base/logging.yaml
+  mqtt: !include ./base/mqtt.yaml
+  ota: !include ./base/ota.yaml
+
+substitutions:
+  board_name: garage-door
+  board_comment: ESP32 monitoring home garage door
+  board_id: $car_garage_door_board_id
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO23
+      mode: INPUT_PULLUP
+    name: "Garage Door"
+    id: "garage_door"
+    device_class: door
+    publish_initial_state: true
+    filters:
+      - delayed_on: 250ms
+    on_state:
+      then:
+        - lambda: |-
+            id(mqtt_event_helper_bool)("sensor/$car_garage_door_sensor_id/contact_state", x, "$car_garage_door_sensor_id");
