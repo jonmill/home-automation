@@ -23,4 +23,4 @@ sensor:
     on_value:
       then:
         - lambda: |-
-            id(mqtt_event_helper_bool)(id(make_sensor_topic)($sensor_id, "lux"), id(lux_sensor).state, "$sensor_id");
+            id(mqtt_event_helper_float)(id(make_sensor_topic)($sensor_id, "lux"), id(lux_sensor).value, "$sensor_id");

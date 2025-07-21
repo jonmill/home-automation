@@ -1,3 +1,9 @@
 # Enable logging
 logger:
   level: DEBUG
+  on_message:
+    then:
+      - lambda: |-
+          if (id(mqtt_event_helper_logging)) {
+            id(mqtt_event_helper_logging)(id(make_board_topic)("logging"), message, level, tag);
+          }

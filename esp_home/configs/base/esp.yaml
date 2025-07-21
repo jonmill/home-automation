@@ -55,6 +55,7 @@ esphome:
     name: "jonmill.home_automation"
     version: "3.0.0-beta-2"
   on_boot:
+    priority: 300
     then:
       - lambda: |-
           id(mqtt_event_helper_base) = [](std::string topic, std::function<void(ArduinoJson::JsonObject)> builder) {
@@ -124,12 +125,6 @@ esphome:
               }
             });
           };
-
-          esphome::logger::global_logger->add_on_log_callback([](uint8_t level, const char* tag, const char* message, size_t line) {
-            if (id(mqtt_event_helper_logging)) {
-              id(mqtt_event_helper_logging)(id(make_board_topic)("logging"), message, level, tag);
-            }
-          });
 
           id(mqtt_event_helper_str)(id(make_board_topic)("power"), std::string("BootingUp"), "");
   on_shutdown:
