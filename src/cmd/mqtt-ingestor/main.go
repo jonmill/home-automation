@@ -45,11 +45,16 @@ func main() {
 	defer dbContext.Close()
 
 	// Connect to MQTT
+	mqttUrl := os.Getenv("MQTT_URL")
+	mqttPassword := os.Getenv("MQTT_PASSWORD")
+	if mqttUrl == "" {
+		mqttUrl = "tcp://localhost:1883"
+	}
 	mqttOpts := mqtt.NewClientOptions()
-	mqttOpts.AddBroker("tcp://192.168.2.27:1883")
+	mqttOpts.AddBroker(mqttUrl)
 	mqttOpts.SetClientID("mqtt-ingestor")
 	mqttOpts.SetUsername("ha-mqtt")
-	mqttOpts.SetPassword("yiiJYKaPq9Y7UUhG694bK5Po43o9gCuu")
+	mqttOpts.SetPassword(mqttPassword)
 	client := mqtt.NewClient(mqttOpts)
 
 	hctx := &handlers.HandlerContext{

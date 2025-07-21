@@ -2,6 +2,7 @@ services:
   mosquitto:
     image: eclipse-mosquitto:2
     container_name: mosquitto
+    hostname: queue
     restart: unless-stopped
     ports:
       - "1883:1883"         # MQTT
@@ -14,6 +15,7 @@ services:
   postgres:
     image: postgres:17
     container_name: postgres
+    hostname: db
     restart: unless-stopped
     environment:
       POSTGRES_USER: homeauto
@@ -23,6 +25,20 @@ services:
       - ./postgres/data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - mqtt-net
+  mqtt-ingestor:
+    image: homeauto/mqtt-ingestor:latest
+    container_name: ingest
+    hostname: ingest
+    restart: unless-stopped
+    environment:
+      - MQTT_URL=tcp://queue:1883
+      - MQTT_PASSWORD=yiiJYKaPq9Y7UUhG694bK5Po43o9gCuu
+      - DATABASE_URL=postgres://homeauto:homeauto@db:5432/homeautomation?sslmode=disable
+    depends_on:
+      - mosquitto
+      - postgres
     networks:
       - mqtt-net
 
