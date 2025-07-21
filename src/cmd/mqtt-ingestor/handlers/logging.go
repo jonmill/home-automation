@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"home-automation/src/cmd/mqtt-ingestor/models"
+	mqttmodels "home-automation/src/cmd/mqtt-ingestor/internal/mqtt/models"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"go.uber.org/zap"
@@ -14,7 +14,7 @@ func (h *HandlerContext) HandleLogMessage(_ mqtt.Client, msg mqtt.Message) {
 
 	clean := strings.ReplaceAll(string(msg.Payload()), "\x1b", "")
 
-	var payload models.LogEvent
+	var payload mqttmodels.LogEvent
 	if err := json.Unmarshal([]byte(clean), &payload); err != nil {
 		h.Logger.Warn("Failed to unmarshal log message", zap.Error(err))
 		return

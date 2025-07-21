@@ -3,14 +3,14 @@ package handlers
 import (
 	"encoding/json"
 
-	"home-automation/src/cmd/mqtt-ingestor/models"
+	mqttmodels "home-automation/src/cmd/mqtt-ingestor/internal/mqtt/models"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"go.uber.org/zap"
 )
 
 func (h *HandlerContext) HandleOtaMessage(_ mqtt.Client, msg mqtt.Message) {
-	var payload models.DataPayload
+	var payload mqttmodels.DataPayload
 	if err := json.Unmarshal(msg.Payload(), &payload); err != nil {
 		h.Logger.Warn("Failed to unmarshal OTA message", zap.Error(err))
 		return

@@ -1,0 +1,44 @@
+CREATE TABLE Boards (
+    Id SERIAL PRIMARY KEY,
+    Name TEXT NOT NULL,
+    AddedAt TIMESTAMPTZ NOT NULL DEFAULT now(),
+    OnBattery BOOLEAN NOT NULL DEFAULT false,
+    IsDeleted BOOLEAN NOT NULL DEFAULT false,
+    DeletedOn TIMESTAMPTZ
+);
+
+CREATE TABLE Sensors (
+    Id SERIAL PRIMARY KEY,
+    Name TEXT NOT NULL,
+    AddedAt TIMESTAMPTZ NOT NULL DEFAULT now(),
+    Type TEXT NOT NULL,
+    Unit TEXT NOT NULL,
+    IsDeleted BOOLEAN NOT NULL DEFAULT false,
+    DeletedOn TIMESTAMPTZ
+);
+
+CREATE TABLE BoardSensors (
+    BoardId INTEGER NOT NULL REFERENCES Boards(Id) ON DELETE RESTRICT,
+    SensorId INTEGER NOT NULL REFERENCES Sensors(Id) ON DELETE RESTRICT,
+    PRIMARY KEY (BoardId, SensorId)
+);
+
+CREATE TABLE SensorValues (
+    BoardId INTEGER NOT NULL REFERENCES Boards(Id) ON DELETE RESTRICT,
+    SensorId INTEGER NOT NULL REFERENCES Sensors(Id) ON DELETE RESTRICT,
+    RecordedAt TIMESTAMPTZ NOT NULL DEFAULT now(),
+    Value TEXT NOT NULL,
+    PRIMARY KEY (BoardId, SensorId, RecordedAt)
+);
+
+CREATE TABLE LogEntries (
+    Id BIGSERIAL PRIMARY KEY,
+    BoardId INTEGER NOT NULL REFERENCES Boards(Id) ON DELETE RESTRICT,
+    Message TEXT NOT NULL,
+    Level INTEGER NOT NULL,
+    Tag TEXT,
+    LoggedAt TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_sensor_values_recorded_at ON SensorValues (RecordedAt);
+CREATE INDEX idx_log_entries_logged_at ON LogEntries (LoggedAt);

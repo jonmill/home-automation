@@ -8,13 +8,14 @@ import (
 	"syscall"
 
 	"home-automation/src/cmd/mqtt-ingestor/handlers"
+	"home-automation/src/cmd/mqtt-ingestor/internal/db"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
 
-var db *pgxpool.Pool
+var dbContext *pgxpool.Pool
 var logger *zap.Logger
 
 func main() {
@@ -29,15 +30,19 @@ func main() {
 	defer logger.Sync()
 
 	// Connect to Postgres
-	/*dbURL := os.Getenv("DATABASE_URL")
+	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
 		dbURL = "postgres://homeauto:homeauto@localhost:5432/homeautomation"
 	}
-	db, err = pgxpool.New(ctx, dbURL)
+	logger.Info("Running database migrations...")
+	if err := db.RunMigrations(dbURL); err != nil {
+		logger.Fatal("Database migration failed", zap.Error(err))
+	}
+	dbContext, err = pgxpool.New(ctx, dbURL)
 	if err != nil {
 		logger.Fatal("Failed to connect to DB", zap.Error(err))
 	}
-	defer db.Close()*/
+	defer dbContext.Close()
 
 	// Connect to MQTT
 	mqttOpts := mqtt.NewClientOptions()
@@ -50,7 +55,7 @@ func main() {
 	hctx := &handlers.HandlerContext{
 		Logger: logger,
 		AppCtx: ctx,
-		DB:     db,
+		DB:     dbContext,
 	}
 
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
