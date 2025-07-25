@@ -10,9 +10,10 @@ require (
 	go.uber.org/zap v1.26.0
 )
 
+require github.com/julienschmidt/httprouter v1.3.0
+
 require (
-	github.com/golang-migrate/migrate v3.5.4+incompatible
-	github.com/golang-migrate/migrate/v4 v4.18.3 // indirect
+	github.com/golang-migrate/migrate/v4 v4.18.3
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect

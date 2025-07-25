@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 
-	mqttmodels "home-automation/src/cmd/mqtt-ingestor/internal/mqtt/models"
+	mqttmodels "home-automation/src/internal/mqtt/models"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"go.uber.org/zap"

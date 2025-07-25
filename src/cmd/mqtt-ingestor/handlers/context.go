@@ -3,7 +3,7 @@ package handlers
 import (
 	"context"
 
-	dbContext "home-automation/src/cmd/mqtt-ingestor/internal/db"
+	dbContext "home-automation/src/internal/db"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"

@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"home-automation/src/cmd/mqtt-ingestor/handlers"
-	"home-automation/src/cmd/mqtt-ingestor/internal/db"
+	"home-automation/src/internal/db"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jackc/pgx/v5/pgxpool"

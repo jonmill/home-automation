@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"sync"
 
-	models "home-automation/src/cmd/mqtt-ingestor/internal/mqtt/models"
+	models "home-automation/src/internal/mqtt/models"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
