@@ -34,6 +34,8 @@ type Board struct {
 	Name      string    `db:"name"`
 	AddedAt   time.Time `db:"added_at"`
 	OnBattery bool      `db:"on_battery"`
+	IsDeleted bool      `db:"is_deleted"`
+	DeletedOn time.Time `db:"deleted_on"`
 }
 
 // Sensor represents a physical sensor.
@@ -43,6 +45,8 @@ type Sensor struct {
 	AddedAt       time.Time     `db:"added_at"`
 	Type          SensorType    `db:"type"`
 	UnitOfMeasure UnitOfMeasure `db:"unit"`
+	IsDeleted     bool          `db:"is_deleted"`
+	DeletedOn     time.Time     `db:"deleted_on"`
 }
 
 // BoardSensor maps sensors to boards.

@@ -63,6 +63,11 @@ func main() {
 		DB:     dbContext,
 	}
 
+	hctx.DbCache, err = db.NewSensorCacheContext(ctx, dbContext, logger)
+	if err != nil {
+		logger.Fatal("Failed to create sensor cache context", zap.Error(err))
+	}
+
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		logger.Fatal("MQTT connect error", zap.Error(token.Error()))
 	}
