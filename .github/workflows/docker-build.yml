@@ -26,16 +26,16 @@ jobs:
       - name: Build and push mqtt-ingestor image
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: src/cmd/mqtt-ingestor/Dockerfile
+          context: src/cmd/mqtt-ingestor
+          file: Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/mqtt-ingestor:latest
 
       - name: Build and push web image
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: src/cmd/web/Dockerfile
+          context: src/cmd/web
+          file: Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/web:latest
 
