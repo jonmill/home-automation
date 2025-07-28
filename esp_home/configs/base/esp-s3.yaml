@@ -4,7 +4,7 @@ packages:
 esp32:
   board: esp32s3box
   variant: esp32s3
-  flash_size: 16MB
+  flash_size: 8MB
   framework:
     type: esp-idf
     version: recommended

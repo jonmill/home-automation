@@ -41,6 +41,19 @@ services:
       - postgres
     networks:
       - mqtt-net
+  web:
+    image: homeauto/web:latest
+    container_name: web
+    hostname: web
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://homeauto:homeauto@db:5432/homeautomation?sslmode=disable
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    networks:
+      - mqtt-net
 
 networks:
   mqtt-net:

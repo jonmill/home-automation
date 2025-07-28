@@ -1,0 +1,25 @@
+<div class="page-header">
+  <h2>Boards</h2>
+  <p class="subtitle">Create, update, or remove boards</p>
+</div>
+
+<form class="card"
+      hx-post="/api/boards"
+      hx-target="#board-table"
+      hx-trigger="submit"
+      hx-headers='{"Content-Type": "application/json"}'
+      hx-ext="json-enc"
+      style="margin-bottom: 1rem;">
+
+  <input type="text" name="name" placeholder="Board name" required />
+  <label>
+    <input type="checkbox" name="on_battery" />
+    Battery-powered?
+  </label>
+
+  <button type="submit">Add Board</button>
+</form>
+
+
+<!-- Board Table -->
+<div id="board-table" hx-get="/api/boards" hx-trigger="load" hx-target="this"></div>

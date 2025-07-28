@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" hx-ext="head-support">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Home Automation Dashboard</title>
+  <link href="/static/styles.css" rel="stylesheet" />
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+</head>
+<body>
+  <div class="app-shell" hx-history-elt>
+    <nav class="sidebar">
+      <h1 class="logo">Home Automation</h1>
+      <ul class="nav-links">
+        <li>
+          <button
+            class="nav-item"
+            id="nav-dashboard"
+            hx-get="/dashboard"
+            hx-target="#main-content"
+            hx-push-url="/dashboard"
+          >Dashboard</button>
+        </li>
+        <li>
+          <button
+            class="nav-item"
+            id="nav-boards"
+            hx-get="/boards"
+            hx-target="#main-content"
+            hx-push-url="/boards"
+          >Boards</button>
+        </li>
+        <li>
+          <button
+            class="nav-item"
+            id="nav-sensors"
+            hx-get="/sensors"
+            hx-target="#main-content"
+            hx-push-url="/sensors"
+          >Sensors</button>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="main-content" id="main-content" hx-target="this" hx-swap="innerHTML">
+      {{ .MainContent }}
+    </main>
+  </div>
+
+  <script>
+    // Highlight nav item on click
+    document.querySelectorAll('.nav-item').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        button.classList.add('active');
+      });
+    });
+
+    // Highlight nav item on load based on current URL
+    window.addEventListener('DOMContentLoaded', () => {
+      const path = window.location.pathname || "/dashboard";
+      const activeId = "nav-" + (path.split("/")[1] || "dashboard");
+      const activeBtn = document.getElementById(activeId);
+      if (activeBtn) {
+        activeBtn.classList.add("active");
+      }
+
+      // Load default route content if main is empty (first load)
+      if (!document.getElementById("main-content").innerHTML.trim()) {
+        fetch(path)
+          .then(resp => resp.text())
+          .then(html => {
+            document.getElementById("main-content").innerHTML = html;
+          });
+      }
+    });
+  </script>
+</body>
+</html>

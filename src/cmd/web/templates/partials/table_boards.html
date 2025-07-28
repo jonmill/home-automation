@@ -1,0 +1,32 @@
+<table class="card">
+  <thead>
+    <tr><th>Name</th><th>Battery?</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {{ range . }}
+    <tr>
+      <td>
+        <input name="name" value="{{ .Name }}"
+               hx-put="/api/boards"
+               hx-include="closest tr"
+               hx-trigger="change"
+               hx-target="#board-table" />
+      </td>
+      <td>
+        <input type="checkbox" name="on_battery" {{ if .OnBattery }}checked{{ end }}
+               hx-put="/api/boards"
+               hx-include="closest tr"
+               hx-trigger="change"
+               hx-target="#board-table" />
+      </td>
+      <td>
+        <button class="danger"
+                hx-delete="/api/boards"
+                hx-include="closest tr"
+                hx-target="#board-table">Delete</button>
+        <input type="hidden" name="id" value="{{ .ID }}">
+      </td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>

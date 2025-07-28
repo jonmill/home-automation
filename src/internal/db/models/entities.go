@@ -5,27 +5,30 @@ import (
 )
 
 // SensorType represents the type of sensor.
-type SensorType string
+type SensorType int
 
 const (
-	SensorTypeTemperature SensorType = "temperature"
-	SensorTypeHumidity    SensorType = "humidity"
-	SensorTypeLux         SensorType = "lux"
-	SensorTypeMotion      SensorType = "motion"
-	SensorTypePressure    SensorType = "pressure"
-	SensorTypeVoltage     SensorType = "voltage"
+	SensorTypeTemperature SensorType = iota
+	SensorTypeHumidity
+	SensorTypeLux
+	SensorTypeMotion
+	SensorTypePressure
+	SensorTypeVoltage
+	SensorTypeContact
+	SensorTypeOrganicCompound
 )
 
 // UnitOfMeasure represents the unit associated with the sensor.
-type UnitOfMeasure string
+type UnitOfMeasure int
 
 const (
-	UnitCelsius    UnitOfMeasure = "C"
-	UnitFahrenheit UnitOfMeasure = "F"
-	UnitPercent    UnitOfMeasure = "%"
-	UnitLux        UnitOfMeasure = "lux"
-	UnitPascal     UnitOfMeasure = "Pa"
-	UnitVolts      UnitOfMeasure = "V"
+	UnitCelsius UnitOfMeasure = iota
+	UnitPercent
+	UnitLux
+	UnitPascal
+	UnitVolts
+	UnitBoolean
+	UnitPartPerBillion
 )
 
 // Board represents an ESPHome device board.
