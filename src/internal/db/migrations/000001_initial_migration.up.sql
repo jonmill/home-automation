@@ -67,10 +67,10 @@ INSERT INTO Sensors (Id, Name, Type, Unit) VALUES
 (14, 'Nora Room Air Temperature', 0, 0),
 (15, 'Nora Room Air Pressure', 3, 3),
 (16, 'Nora Room Air Humidity', 1, 1),
-(18, 'Front House Environment Temperature', 0, 0),
-(19, 'Front House Environment Humidity', 1, 1),
-(20, 'Front House Environment Pressure', 3, 3),
-(21, 'Garage Air Temperature', 0, 0);
+(17, 'Front House Environment Temperature', 0, 0),
+(18, 'Front House Environment Humidity', 1, 1),
+(19, 'Front House Environment Pressure', 3, 3),
+(20, 'Garage Air Temperature', 0, 0);
 
 INSERT INTO BoardSensors (BoardId, SensorId) VALUES
 (1, 1),
