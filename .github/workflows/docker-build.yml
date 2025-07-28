@@ -26,23 +26,15 @@ jobs:
       - name: Build and push mqtt-ingestor image
         uses: docker/build-push-action@v4
         with:
-          context: src/cmd/mqtt-ingestor
-          file: Dockerfile
+          context: ./src
+          file: ./src/cmd/mqtt-ingestor/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/mqtt-ingestor:latest
 
       - name: Build and push web image
         uses: docker/build-push-action@v4
         with:
-          context: src/cmd/web
-          file: Dockerfile
+          context: ./src
+          file: ./src/cmd/web/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/web:latest
-
-      - name: Upload Docker images as artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-images
-          path: |
-            src/cmd/mqtt-ingestor/Dockerfile
-            src/cmd/web/Dockerfile
