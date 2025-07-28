@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY . .
 
-WORKDIR /app/src/cmd/mqtt-ingestor
+WORKDIR /app/cmd/mqtt-ingestor
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/mqtt-ingestor
 
 FROM alpine:latest

@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # Set working directory to the web cmd folder
-WORKDIR /app/src/cmd/web
+WORKDIR /app/cmd/web
 
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/web
