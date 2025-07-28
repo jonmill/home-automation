@@ -14,12 +14,12 @@ RUN go mod download
 COPY . .
 
 # Build the binary
-RUN go build -o mqtt-ingestor ./src/cmd/mqtt-ingestor
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o mqtt-ingestor ./src/cmd/mqtt-ingestor
 
 # Create a minimal runtime image
 FROM alpine:latest
-WORKDIR /root/
-COPY --from=builder /app/mqtt-ingestor .
+WORKDIR /app/
+COPY --from=builder /app/mqtt-ingestor /app/mqtt-ingestor
 
 # Set environment variables
 ENV DATABASE_URL=postgres://homeauto:homeauto@localhost:5432/homeautomation
@@ -27,4 +27,4 @@ ENV MQTT_URL=tcp://localhost:1883
 ENV MQTT_PASSWORD=
 
 # Command to run the binary
-ENTRYPOINT ["./mqtt-ingestor"]
+ENTRYPOINT ["/app/mqtt-ingestor"]

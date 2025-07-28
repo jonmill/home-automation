@@ -28,7 +28,7 @@ services:
     networks:
       - mqtt-net
   mqtt-ingestor:
-    image: homeauto/mqtt-ingestor:latest
+    image: ghcr.io/jonmill/home-automation/mqtt-ingestor:latest
     container_name: ingest
     hostname: ingest
     restart: unless-stopped
@@ -42,7 +42,7 @@ services:
     networks:
       - mqtt-net
   web:
-    image: homeauto/web:latest
+    image: ghcr.io/jonmill/home-automation/web:latest
     container_name: web
     hostname: web
     restart: unless-stopped
@@ -51,7 +51,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "8080:8080"
+      - "8079:8080"
     networks:
       - mqtt-net
 
