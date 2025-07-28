@@ -1,31 +1,33 @@
-# Dockerfile for web
+# Build stage
 FROM golang:1.24.5 AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Copy go.mod and go.sum files
+# Copy Go mod files and download deps
 COPY go.mod go.sum ./
-
-# Download dependencies
 RUN go mod download
 
-# Copy the source code
+# Copy the full source code
 COPY . .
 
+# Set working directory to the web cmd folder
+WORKDIR /app/src/cmd/web
+
 # Build the binary
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o web ./src/cmd/web
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/web
 
-# Create a minimal runtime image
+# Final stage
 FROM alpine:latest
-WORKDIR /app/
-COPY --from=builder /app/web /app/web
+RUN apk --no-cache add ca-certificates
 
-# Expose the necessary port
+WORKDIR /app
+COPY --from=builder /app/web .
+
+# Expose port for HTTP server
 EXPOSE 8080
 
-# Set environment variables
+# Environment variable can be overridden in compose
 ENV DATABASE_URL=postgres://homeauto:homeauto@localhost:5432/homeautomation
 
-# Command to run the binary
 ENTRYPOINT ["/app/web"]
