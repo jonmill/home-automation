@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	dbmodels "home-automation/src/internal/db/models"
+	dbmodels "home-automation/internal/db/models"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	dbmodels "home-automation/src/internal/db/models"
+	dbmodels "home-automation/internal/db/models"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/julienschmidt/httprouter"

@@ -13,7 +13,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"go.uber.org/zap"
 
-	"home-automation/src/cmd/web/handlers"
+	"home-automation/cmd/web/handlers"
 )
 
 var dbContext *pgxpool.Pool

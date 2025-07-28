@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"home-automation/src/internal/db/migrations"
+	"home-automation/internal/db/migrations"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"

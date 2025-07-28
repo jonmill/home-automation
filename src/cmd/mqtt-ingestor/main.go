@@ -3,12 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"home-automation/cmd/mqtt-ingestor/handlers"
+	"home-automation/internal/db"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"home-automation/src/cmd/mqtt-ingestor/handlers"
-	"home-automation/src/internal/db"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/jackc/pgx/v5/pgxpool"
