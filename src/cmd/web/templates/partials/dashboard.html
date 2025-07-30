@@ -21,3 +21,51 @@
     <p>MQTT traffic today</p>
   </div>
 </div>
+
+<div id="temp-sensor-charts"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('/api/temperature-sensors')
+      .then(resp => resp.json())
+      .then(sensors => {
+        const container = document.getElementById('temp-sensor-charts');
+        sensors.forEach(s => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          const title = document.createElement('h3');
+          title.textContent = s.name;
+          const canvas = document.createElement('canvas');
+          canvas.id = `chart-${s.id}`;
+          card.appendChild(title);
+          card.appendChild(canvas);
+          container.appendChild(card);
+
+          fetch(`/api/sensors/${s.id}/values?hours=24`)
+            .then(r => r.json())
+            .then(points => {
+              const labels = points.map(p => new Date(p.time).toLocaleTimeString());
+              const data = points.map(p => p.value);
+              new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                  labels: labels,
+                  datasets: [{
+                    label: s.name,
+                    data: data,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59,130,246,0.2)',
+                    tension: 0.3,
+                  }]
+                },
+                options: {
+                  scales: {
+                    x: { display: false }
+                  }
+                }
+              });
+            });
+        });
+      });
+  });
+  </script>
