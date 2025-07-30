@@ -49,6 +49,9 @@ func InitializeWebHandler(pool *pgxpool.Pool, router *httprouter.Router, project
 	router.GET("/sensors", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		handler.servePartialOrFull(w, r, "sensors.html")
 	})
+	router.GET("/datafeed", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		handler.servePartialOrFull(w, r, "datafeed.html")
+	})
 
 	router.GET("/index.html", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		http.ServeFile(w, r, handler.IndexPath)
@@ -104,7 +107,7 @@ func (h *WebHandler) renderIndexWithPartial(w http.ResponseWriter, templateName 
 }
 
 func (h *WebHandler) renderBoardsTable(w http.ResponseWriter, boards []dbmodels.Board) {
-	tmplPath := filepath.Join(h.PartialsPath, "table_boards.tmpl")
+	tmplPath := filepath.Join(h.PartialsPath, "table_boards.html")
 
 	tmpl, err := template.ParseFiles(tmplPath)
 	if err != nil {
@@ -117,7 +120,7 @@ func (h *WebHandler) renderBoardsTable(w http.ResponseWriter, boards []dbmodels.
 }
 
 func (h *WebHandler) renderSensorsTable(w http.ResponseWriter, sensors []dbmodels.Sensor) {
-	tmplPath := filepath.Join(h.PartialsPath, "table_sensors.tmpl")
+	tmplPath := filepath.Join(h.PartialsPath, "table_sensors.html")
 
 	tmpl, err := template.ParseFiles(tmplPath)
 	if err != nil {
