@@ -52,6 +52,8 @@ func InitializeApiHandler(pool *pgxpool.Pool, router *httprouter.Router, logger 
 	router.GET("/api/sensors/table", handler.listSensorsTable())
 	router.GET("/api/latest-sensor-value/:id", handler.latestSensorValue())
 	router.GET("/api/sensor-values", handler.listSensorValues())
+	router.GET("/api/sensors/:id/values", handler.sensorValuesForSensor())
+	router.GET("/api/temperature-sensors", handler.listTemperatureSensors())
 
 	router.POST("/api/sensors", handler.createSensor())
 	router.PUT("/api/sensors/:id", handler.updateSensor())
@@ -351,5 +353,86 @@ func (h *ApiHandler) listSensorValues() httprouter.Handle {
 		}
 
 		fmt.Fprint(w, `</tbody></table>`)
+	}
+}
+
+// sensorValuesForSensor returns up to the last 24h of readings for a given sensor
+func (h *ApiHandler) sensorValuesForSensor() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		sensorID, err := strconv.Atoi(ps.ByName("id"))
+		if err != nil {
+			http.Error(w, "invalid sensor id", http.StatusBadRequest)
+			return
+		}
+
+		hours := 24
+		if hStr := r.URL.Query().Get("hours"); hStr != "" {
+			if v, err := strconv.Atoi(hStr); err == nil {
+				hours = v
+			}
+		}
+
+		query := `SELECT recordedat, value FROM sensorvalues
+                        WHERE sensorid=$1 AND recordedat >= NOW() - ($2 || ' hours')::interval
+                        ORDER BY recordedat ASC`
+		rows, err := h.Db.Query(r.Context(), query, sensorID, hours)
+		if err != nil {
+			h.Logger.Error("Failed to query sensor series", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		type point struct {
+			Time  time.Time `json:"time"`
+			Value float64   `json:"value"`
+		}
+		var series []point
+		for rows.Next() {
+			var ts time.Time
+			var valStr string
+			if err := rows.Scan(&ts, &valStr); err != nil {
+				h.Logger.Error("scan sensor series", zap.Error(err))
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if v, err := strconv.ParseFloat(valStr, 64); err == nil {
+				series = append(series, point{Time: ts, Value: v})
+			}
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(series)
+	}
+}
+
+// listTemperatureSensors returns all sensors of temperature type
+func (h *ApiHandler) listTemperatureSensors() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		rows, err := h.Db.Query(r.Context(), "SELECT id, name FROM sensors WHERE type=$1", dbmodels.SensorTypeTemperature)
+		if err != nil {
+			h.Logger.Error("Failed to query temperature sensors", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		type sensor struct {
+			ID   int    `json:"id"`
+			Name string `json:"name"`
+		}
+		var sensors []sensor
+		for rows.Next() {
+			var s sensor
+			if err := rows.Scan(&s.ID, &s.Name); err != nil {
+				h.Logger.Error("scan temperature sensor", zap.Error(err))
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			sensors = append(sensors, s)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(sensors)
 	}
 }
