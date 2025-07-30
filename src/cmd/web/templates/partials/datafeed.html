@@ -1,0 +1,6 @@
+<div class="page-header">
+  <h2>Live Data Feed</h2>
+  <p class="subtitle">Latest sensor values from all boards</p>
+</div>
+
+<div id="data-feed" hx-get="/api/sensor-values" hx-trigger="load,every 3s" hx-target="this"></div>

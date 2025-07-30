@@ -1,0 +1,15 @@
+<table class="card">
+  <thead>
+    <tr><th>Time</th><th>Board</th><th>Sensor</th><th>Value</th></tr>
+  </thead>
+  <tbody>
+    {{ range . }}
+    <tr>
+      <td>{{ .RecordedAt }}</td>
+      <td>{{ .BoardName }}</td>
+      <td>{{ .SensorName }}</td>
+      <td>{{ .Value }}</td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>

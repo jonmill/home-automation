@@ -49,6 +49,10 @@ func InitializeApiHandler(pool *pgxpool.Pool, router *httprouter.Router, logger 
 	router.DELETE("/api/boards/:id", handler.deleteBoard())
 
 	router.GET("/api/sensors", handler.listSensors())
+	router.GET("/api/sensors/table", handler.listSensorsTable())
+	router.GET("/api/latest-sensor-value/:id", handler.latestSensorValue())
+	router.GET("/api/sensor-values", handler.listSensorValues())
+
 	router.POST("/api/sensors", handler.createSensor())
 	router.PUT("/api/sensors/:id", handler.updateSensor())
 	router.DELETE("/api/sensors/:id", handler.deleteSensor())
@@ -240,5 +244,112 @@ func (h *ApiHandler) deleteSensor() httprouter.Handle {
 			return
 		}
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// listSensorsTable renders all sensors as an HTML table for HTMX requests
+func (h *ApiHandler) listSensorsTable() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		rows, err := h.Db.Query(r.Context(), "SELECT Id, Name, AddedAt, Type, Unit FROM Sensors")
+		if err != nil {
+			h.Logger.Error("Failed to query sensors", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		w.Header().Set("Content-Type", "text/html")
+		fmt.Fprint(w, `<table class="card"><thead><tr><th>Name</th><th>Type</th><th>Unit</th><th>Current</th></tr></thead><tbody>`)
+
+		for rows.Next() {
+			var s dbmodels.Sensor
+			if err := rows.Scan(&s.ID, &s.Name, &s.AddedAt, &s.Type, &s.UnitOfMeasure); err != nil {
+				h.Logger.Error("Failed to scan sensor", zap.Error(err))
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			fmt.Fprintf(w, `<tr><td>%s</td><td>%d</td><td>%d</td><td hx-get="/api/latest-sensor-value/%d" hx-trigger="load,every 3s" hx-target="this">-</td></tr>`, s.Name, s.Type, s.UnitOfMeasure, s.ID)
+		}
+
+		fmt.Fprint(w, `</tbody></table>`)
+	}
+}
+
+// latestSensorValue returns the most recent recorded value for a sensor
+func (h *ApiHandler) latestSensorValue() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		id, err := strconv.Atoi(ps.ByName("id"))
+		if err != nil {
+			http.Error(w, "invalid sensor id", http.StatusBadRequest)
+			return
+		}
+
+		var value string
+		query := `SELECT value FROM sensorvalues WHERE sensorid=$1 ORDER BY recordedat DESC LIMIT 1`
+		err = h.Db.QueryRow(r.Context(), query, id).Scan(&value)
+		if err != nil {
+			if err == pgx.ErrNoRows {
+				value = "-"
+			} else {
+				h.Logger.Error("Failed to query latest sensor value", zap.Error(err))
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		w.Header().Set("Content-Type", "text/plain")
+		fmt.Fprint(w, value)
+	}
+}
+
+type sensorValueRow struct {
+	RecordedAt time.Time
+	BoardName  string
+	SensorName string
+	Value      string
+}
+
+// listSensorValues renders the most recent sensor values across all sensors
+func (h *ApiHandler) listSensorValues() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		limit := 20
+		if l := r.URL.Query().Get("limit"); l != "" {
+			if v, err := strconv.Atoi(l); err == nil {
+				limit = v
+			}
+		}
+
+		rows, err := h.Db.Query(r.Context(), `SELECT sv.recordedat, b.name, s.name, sv.value
+                        FROM sensorvalues sv
+                        JOIN boards b ON sv.boardid=b.id
+                        JOIN sensors s ON sv.sensorid=s.id
+                        ORDER BY sv.recordedat DESC
+                        LIMIT $1`, limit)
+		if err != nil {
+			h.Logger.Error("Failed to query sensor values", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var values []sensorValueRow
+		for rows.Next() {
+			var v sensorValueRow
+			if err := rows.Scan(&v.RecordedAt, &v.BoardName, &v.SensorName, &v.Value); err != nil {
+				h.Logger.Error("Failed to scan sensor value", zap.Error(err))
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			values = append(values, v)
+		}
+
+		w.Header().Set("Content-Type", "text/html")
+		fmt.Fprint(w, `<table class="card"><thead><tr><th>Time</th><th>Board</th><th>Sensor</th><th>Value</th></tr></thead><tbody>`)
+
+		for _, v := range values {
+			fmt.Fprintf(w, `<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>`, v.RecordedAt.Format(time.RFC3339), v.BoardName, v.SensorName, v.Value)
+		}
+
+		fmt.Fprint(w, `</tbody></table>`)
 	}
 }
