@@ -76,12 +76,13 @@ func (h *WebHandler) servePartialOrFull(w http.ResponseWriter, r *http.Request, 
 	if isHTMX {
 		http.ServeFile(w, r, filepath.Join(h.PartialsPath, templateName))
 	} else {
-		h.renderIndexWithPartial(w)
+		h.renderIndexWithPartial(w, templateName)
 	}
 }
 
-func (h *WebHandler) renderIndexWithPartial(w http.ResponseWriter) {
-	contentBytes, err := os.ReadFile(h.PartialsPath)
+func (h *WebHandler) renderIndexWithPartial(w http.ResponseWriter, templateName string) {
+	partialPath := filepath.Join(h.PartialsPath, templateName)
+	contentBytes, err := os.ReadFile(partialPath)
 	if err != nil {
 		http.Error(w, "Could not load page", http.StatusInternalServerError)
 		return
