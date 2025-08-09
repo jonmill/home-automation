@@ -17,10 +17,10 @@ func (h *HandlerContext) HandleBoardTemperatureMessage(_ mqtt.Client, msg mqtt.M
 	}
 
 	h.Logger.Info("Board Temperature State Change", zap.Float64("new_temperature_state", payload.DataValue.(float64)), zap.Int("board_id", payload.Source))
-	if err := h.DbCache.SaveSensorData(h.AppCtx, payload); err != nil {
+	/*if err := h.DbCache.SaveSensorData(h.AppCtx, payload); err != nil {
 		h.Logger.Error("Failed to insert sensor value into DB", zap.Error(err), zap.Int("board_id", payload.Source), zap.String("sensor_id", payload.DataID))
 		return
-	}
+	}*/
 }
 
 func (h *HandlerContext) HandleAirHumidityMessage(_ mqtt.Client, msg mqtt.Message) {
