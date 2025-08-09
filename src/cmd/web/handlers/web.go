@@ -52,6 +52,12 @@ func InitializeWebHandler(pool *pgxpool.Pool, router *httprouter.Router, project
 	router.GET("/datafeed", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		handler.servePartialOrFull(w, r, "datafeed.html")
 	})
+	router.GET("/sensors/table", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		handler.renderSensorsTable(w, r)
+	})
+	router.GET("/boards/table", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		handler.renderBoardsTable(w, r)
+	})
 
 	router.GET("/index.html", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		http.ServeFile(w, r, handler.IndexPath)
@@ -106,7 +112,7 @@ func (h *WebHandler) renderIndexWithPartial(w http.ResponseWriter, templateName 
 	tmpl.Execute(w, data)
 }
 
-func (h *WebHandler) renderBoardsTable(w http.ResponseWriter, boards []dbmodels.Board) {
+func (h *WebHandler) renderBoardsTable(w http.ResponseWriter, r *http.Request) {
 	tmplPath := filepath.Join(h.PartialsPath, "table_boards.html")
 
 	tmpl, err := template.ParseFiles(tmplPath)
@@ -115,17 +121,57 @@ func (h *WebHandler) renderBoardsTable(w http.ResponseWriter, boards []dbmodels.
 		return
 	}
 
+	rows, err := h.Db.Query(r.Context(), "SELECT id, name, addedat, onbattery FROM boards WHERE isdeleted = false")
+	if err != nil {
+		h.Logger.Error("Failed to query boards", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var boards []dbmodels.Board
+	for rows.Next() {
+		var b dbmodels.Board
+		if err := rows.Scan(&b.ID, &b.Name, &b.AddedAt, &b.OnBattery); err != nil {
+			h.Logger.Error("Failed to scan board", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		boards = append(boards, b)
+	}
+
 	w.Header().Set("Content-Type", "text/html")
 	tmpl.Execute(w, boards)
 }
 
-func (h *WebHandler) renderSensorsTable(w http.ResponseWriter, sensors []dbmodels.Sensor) {
+func (h *WebHandler) renderSensorsTable(w http.ResponseWriter, r *http.Request) {
 	tmplPath := filepath.Join(h.PartialsPath, "table_sensors.html")
 
 	tmpl, err := template.ParseFiles(tmplPath)
 	if err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
 		return
+	}
+
+	rows, err := h.Db.Query(r.Context(), "SELECT id, name, addedat, type, unit FROM sensors WHERE isdeleted = false")
+	if err != nil {
+		h.Logger.Error("Failed to query sensors", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var sensors []dbmodels.Sensor
+	for rows.Next() {
+		var s dbmodels.Sensor
+		if err := rows.Scan(&s.ID, &s.Name, &s.AddedAt, &s.Type, &s.UnitOfMeasure); err != nil {
+			h.Logger.Error("Failed to scan sensor", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		s.Type = dbmodels.SensorType(s.Type)
+		s.UnitOfMeasure = dbmodels.UnitOfMeasure(s.UnitOfMeasure)
+		sensors = append(sensors, s)
 	}
 
 	w.Header().Set("Content-Type", "text/html")

@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -49,10 +50,9 @@ func InitializeApiHandler(pool *pgxpool.Pool, router *httprouter.Router, logger 
 	router.DELETE("/api/boards/:id", handler.deleteBoard())
 
 	router.GET("/api/sensors", handler.listSensors())
-	router.GET("/api/sensors/table", handler.listSensorsTable())
 	router.GET("/api/latest-sensor-value/:id", handler.latestSensorValue())
 	router.GET("/api/sensor-values", handler.listSensorValues())
-	// router.GET("/api/sensors/:id/values", handler.sensorValuesForSensor())
+	router.GET("/api/sensors/:id/values", handler.sensorValuesForSensor())
 	router.GET("/api/temperature-sensors", handler.listTemperatureSensors())
 
 	router.POST("/api/sensors", handler.createSensor())
@@ -249,34 +249,6 @@ func (h *ApiHandler) deleteSensor() httprouter.Handle {
 	}
 }
 
-// listSensorsTable renders all sensors as an HTML table for HTMX requests
-func (h *ApiHandler) listSensorsTable() httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		rows, err := h.Db.Query(r.Context(), "SELECT Id, Name, AddedAt, Type, Unit FROM Sensors")
-		if err != nil {
-			h.Logger.Error("Failed to query sensors", zap.Error(err))
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer rows.Close()
-
-		w.Header().Set("Content-Type", "text/html")
-		fmt.Fprint(w, `<table class="card"><thead><tr><th>Name</th><th>Type</th><th>Unit</th><th>Current</th></tr></thead><tbody>`)
-
-		for rows.Next() {
-			var s dbmodels.Sensor
-			if err := rows.Scan(&s.ID, &s.Name, &s.AddedAt, &s.Type, &s.UnitOfMeasure); err != nil {
-				h.Logger.Error("Failed to scan sensor", zap.Error(err))
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			fmt.Fprintf(w, `<tr><td>%s</td><td>%d</td><td>%d</td><td hx-get="/api/latest-sensor-value/%d" hx-trigger="load,every 3s" hx-target="this">-</td></tr>`, s.Name, s.Type, s.UnitOfMeasure, s.ID)
-		}
-
-		fmt.Fprint(w, `</tbody></table>`)
-	}
-}
-
 // latestSensorValue returns the most recent recorded value for a sensor
 func (h *ApiHandler) latestSensorValue() httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -286,17 +258,49 @@ func (h *ApiHandler) latestSensorValue() httprouter.Handle {
 			return
 		}
 
-		var value string
-		query := `SELECT value FROM sensorvalues WHERE sensorid=$1 ORDER BY recordedat DESC LIMIT 1`
-		err = h.Db.QueryRow(r.Context(), query, id).Scan(&value)
+		var value, unit string
+		query := `SELECT value, unit FROM sensorvalues INNER JOIN sensors ON sensorvalues.sensorid = sensors.id WHERE sensorid=$1 ORDER BY recordedat DESC LIMIT 1`
+		err = h.Db.QueryRow(r.Context(), query, id).Scan(&value, &unit)
 		if err != nil {
 			if err == pgx.ErrNoRows {
-				value = "-"
+				w.Header().Set("Content-Type", "text/plain")
+				fmt.Fprint(w, "N/A")
+				return
 			} else {
 				h.Logger.Error("Failed to query latest sensor value", zap.Error(err))
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+		}
+
+		tempUnit, err := strconv.Atoi(unit)
+		if err != nil {
+			h.Logger.Error("Failed to parse unit", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if dbmodels.UnitOfMeasure(tempUnit) == dbmodels.UnitCelsius {
+			tempValue, err := strconv.ParseFloat(value, 64)
+			if err != nil {
+				h.Logger.Error("Failed to parse temperature value", zap.Error(err))
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			tempValue = (tempValue * 9 / 5) + 32
+			tempValue = math.Round(tempValue*10) / 10 // Round to 1 decimal place
+			value = fmt.Sprintf("%.1f °F", tempValue)
+		} else if dbmodels.UnitOfMeasure(tempUnit) == dbmodels.UnitAirQuality {
+			tempValue, err := strconv.ParseFloat(value, 64)
+			if err != nil {
+				h.Logger.Error("Failed to parse air quality value", zap.Error(err))
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			tempValue = math.Round(tempValue)
+			value = fmt.Sprintf("%.0f AQI", tempValue)
 		}
 
 		w.Header().Set("Content-Type", "text/plain")

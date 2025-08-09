@@ -1,71 +1,19 @@
 <div class="page-header">
   <h2>Home Dashboard</h2>
-  <p class="subtitle">Overview of your system’s health and data flow.</p>
+  <p class="subtitle">Overview of your system's health and data flow.</p>
 </div>
 
 <div class="stat-grid">
   <div class="stat">
-    <h3>12 Boards</h3>
-    <p>Online & reporting</p>
+    <h3>Outside Temp</h3>
+    <p hx-swap="innerHTML" hx-get="/api/latest-sensor-value/17" hx-trigger="load" hx-target="this"></p>
   </div>
   <div class="stat">
-    <h3>94 Sensors</h3>
-    <p>Across all locations</p>
+    <h3>Nora Room Temp</h3>
+    <p hx-swap="innerHTML" hx-get="/api/latest-sensor-value/14" hx-trigger="load" hx-target="this"></p>
   </div>
   <div class="stat">
-    <h3>2 Alerts</h3>
-    <p>Needs attention</p>
-  </div>
-  <div class="stat">
-    <h3>13.2 MB</h3>
-    <p>MQTT traffic today</p>
+    <h3>Nora Room AQ</h3>
+    <p hx-swap="innerHTML" hx-get="/api/latest-sensor-value/13" hx-trigger="load" hx-target="this"></p>
   </div>
 </div>
-
-<div id="temp-sensor-charts"></div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    fetch('/api/temperature-sensors')
-      .then(resp => resp.json())
-      .then(sensors => {
-        const container = document.getElementById('temp-sensor-charts');
-        sensors.forEach(s => {
-          const card = document.createElement('div');
-          card.className = 'card';
-          const title = document.createElement('h3');
-          title.textContent = s.name;
-          const canvas = document.createElement('canvas');
-          canvas.id = `chart-${s.id}`;
-          card.appendChild(title);
-          card.appendChild(canvas);
-          container.appendChild(card);
-
-          fetch(`/api/sensors/${s.id}/values?hours=24`)
-            .then(r => r.json())
-            .then(points => {
-              const labels = points.map(p => new Date(p.time).toLocaleTimeString());
-              const data = points.map(p => p.value);
-              new Chart(canvas.getContext('2d'), {
-                type: 'line',
-                data: {
-                  labels: labels,
-                  datasets: [{
-                    label: s.name,
-                    data: data,
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59,130,246,0.2)',
-                    tension: 0.3,
-                  }]
-                },
-                options: {
-                  scales: {
-                    x: { display: false }
-                  }
-                }
-              });
-            });
-        });
-      });
-  });
-  </script>
