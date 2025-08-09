@@ -52,7 +52,7 @@ func InitializeApiHandler(pool *pgxpool.Pool, router *httprouter.Router, logger 
 	router.GET("/api/sensors/table", handler.listSensorsTable())
 	router.GET("/api/latest-sensor-value/:id", handler.latestSensorValue())
 	router.GET("/api/sensor-values", handler.listSensorValues())
-	router.GET("/api/sensors/:id/values", handler.sensorValuesForSensor())
+	// router.GET("/api/sensors/:id/values", handler.sensorValuesForSensor())
 	router.GET("/api/temperature-sensors", handler.listTemperatureSensors())
 
 	router.POST("/api/sensors", handler.createSensor())

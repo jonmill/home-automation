@@ -82,6 +82,7 @@ func main() {
 	client.Subscribe("board/+/sensor/+/air_temperature", 1, hctx.HandleAirTemperatureMessage)
 	client.Subscribe("board/+/sensor/+/air_humidity", 1, hctx.HandleAirHumidityMessage)
 	client.Subscribe("board/+/sensor/+/air_pressure", 1, hctx.HandleAirPressureMessage)
+	client.Subscribe("board/+/sensor/+/air_quality", 1, hctx.HandleAirQualityMessage)
 	client.Subscribe("board/+/sensor/+/contact_state", 1, hctx.HandleContactStateMessage)
 
 	// Wait for shutdown
