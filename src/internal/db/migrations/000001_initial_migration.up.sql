@@ -63,7 +63,7 @@ INSERT INTO Sensors (Id, Name, Type, Unit) VALUES
 (10, 'Downstairs Air Pressure', 3, 3),
 (11, 'Downstairs Air Humidity', 1, 1),
 (12, 'Daylight Lux', 2, 2),
-(13, 'Nora Room Organic Compounds', 7, 6),
+(13, 'Nora Room Air Quality', 8, 7),
 (14, 'Nora Room Air Temperature', 0, 0),
 (15, 'Nora Room Air Pressure', 3, 3),
 (16, 'Nora Room Air Humidity', 1, 1),

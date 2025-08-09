@@ -16,6 +16,7 @@ const (
 	SensorTypeVoltage
 	SensorTypeContact
 	SensorTypeOrganicCompound
+	SensorTypeAirQuality
 )
 
 // UnitOfMeasure represents the unit associated with the sensor.
@@ -29,6 +30,7 @@ const (
 	UnitVolts
 	UnitBoolean
 	UnitPartPerBillion
+	UnitAirQuality
 )
 
 // Board represents an ESPHome device board.

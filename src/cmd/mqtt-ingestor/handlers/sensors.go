@@ -62,6 +62,19 @@ func (h *HandlerContext) HandleAirTemperatureMessage(_ mqtt.Client, msg mqtt.Mes
 	}
 }
 
+func (h *HandlerContext) HandleAirQualityMessage(_ mqtt.Client, msg mqtt.Message) {
+	var payload mqttmodels.DataPayload
+	if err := json.Unmarshal(msg.Payload(), &payload); err != nil {
+		h.Logger.Warn("Failed to unmarshal Air Quality message", zap.Error(err))
+		return
+	}
+
+	h.Logger.Info("Air Quality State Change", zap.Float64("new_air_quality_state", payload.DataValue.(float64)), zap.Int("board_id", payload.Source), zap.String("sensor_id", payload.DataID))
+	if err := h.DbCache.SaveSensorData(h.AppCtx, payload); err != nil {
+		h.Logger.Error("Failed to save Air Quality state", zap.Error(err))
+	}
+}
+
 func (h *HandlerContext) HandleContactStateMessage(_ mqtt.Client, msg mqtt.Message) {
 	var payload mqttmodels.DataPayload
 	if err := json.Unmarshal(msg.Payload(), &payload); err != nil {

@@ -1,6 +1,6 @@
 packages:
   ids: !include ./base/ids.yaml
-  esp: !include ./base/esp-s3.yaml
+  esp: !include ./base/esp-wroom.yaml
 
 substitutions:
   board_name: nora_room_aq
@@ -12,27 +12,16 @@ substitutions:
   air_humidity_sensor_id: $nora_air_humidity_1_sensor_id
 
 i2c:
-  sda: GPIO8
-  scl: GPIO9
+  sda: GPIO21
+  scl: GPIO22
   scan: true
   id: bus_a
-  frequency: 15khz
 
 sensor:
-  - platform: ags10
-    id: organic_compounds_sensor
-    update_interval: 15min
-    address: 0x1A
-    tvoc:
-      name: organic_compounds_sensor
-      on_value:
-        then:
-          - lambda: |-
-              id(mqtt_event_helper_float)(id(make_sensor_topic)($organic_compounds_sensor_id, "organic_compounds"), x, "$organic_compounds_sensor_id");
-  - platform: bme280_i2c
-    address: 0x76
-    update_interval: 15min
-    iir_filter: 16x
+  - platform: bme680
+    address: 0x77
+    update_interval: 20min
+    iir_filter: 3x
     temperature:
       id: air_temp
       on_value:
@@ -51,3 +40,17 @@ sensor:
         then:
           - lambda: |-
               id(mqtt_event_helper_float)(id(make_sensor_topic)($air_humidity_sensor_id, "air_humidity"), x, "$air_humidity_sensor_id");
+    gas_resistance:
+      id: gas_resistance
+      on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($organic_compounds_sensor_id, "air_quality"), log(x) + 0.04 * id(air_humidity).state, "$organic_compounds_sensor_id");
+  - platform: template
+    name: "BME680 Indoor Air Quality"
+    id: iaq
+    # calculation: comp_gas = log(R_gas[ohm]) + 0.04 log(Ohm)/%rh * hum[%rh]
+    lambda: |-
+      return log(id(gas_resistance).state) + 0.04 *  id(air_humidity).state;
+    state_class: "measurement"
+    update_interval: 20min
