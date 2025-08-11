@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{8CA9E248-E78C-48E6-BD41-8C0DBBB3E393}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{47CAB7F0-1E50-484F-9AB7-1005FB7A872A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{A7EAE628-7474-499A-A690-F29250873994}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mqtt", "Mqtt\Mqtt.csproj", "{9E46B95D-4541-4605-8C49-EC3F2E7540AE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CA9E248-E78C-48E6-BD41-8C0DBBB3E393}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CA9E248-E78C-48E6-BD41-8C0DBBB3E393}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CA9E248-E78C-48E6-BD41-8C0DBBB3E393}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CA9E248-E78C-48E6-BD41-8C0DBBB3E393}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47CAB7F0-1E50-484F-9AB7-1005FB7A872A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47CAB7F0-1E50-484F-9AB7-1005FB7A872A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47CAB7F0-1E50-484F-9AB7-1005FB7A872A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47CAB7F0-1E50-484F-9AB7-1005FB7A872A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7EAE628-7474-499A-A690-F29250873994}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7EAE628-7474-499A-A690-F29250873994}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7EAE628-7474-499A-A690-F29250873994}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7EAE628-7474-499A-A690-F29250873994}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E46B95D-4541-4605-8C49-EC3F2E7540AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E46B95D-4541-4605-8C49-EC3F2E7540AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E46B95D-4541-4605-8C49-EC3F2E7540AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E46B95D-4541-4605-8C49-EC3F2E7540AE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

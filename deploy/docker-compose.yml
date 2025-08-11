@@ -33,9 +33,9 @@ services:
     hostname: ingest
     restart: unless-stopped
     environment:
-      - MQTT_URL=tcp://queue:1883
+      - MQTT_URL=queue
       - MQTT_PASSWORD=yiiJYKaPq9Y7UUhG694bK5Po43o9gCuu
-      - DATABASE_URL=postgres://homeauto:homeauto@db:5432/homeautomation?sslmode=disable
+      - DATABASE_URL=Server=db;Port=5432;Database=homeautomation;User Id=homeauto;Password=homeauto;
     depends_on:
       - mosquitto
       - postgres
@@ -47,7 +47,9 @@ services:
     hostname: web
     restart: unless-stopped
     environment:
-      - DATABASE_URL=postgres://homeauto:homeauto@db:5432/homeautomation?sslmode=disable
+      - MQTT_URL=queue
+      - MQTT_PASSWORD=yiiJYKaPq9Y7UUhG694bK5Po43o9gCuu
+      - DATABASE_URL=Server=db;Port=5432;Database=homeautomation;User Id=homeauto;Password=homeauto;
     depends_on:
       - postgres
     ports:
