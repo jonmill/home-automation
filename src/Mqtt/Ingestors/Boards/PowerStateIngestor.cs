@@ -9,7 +9,7 @@ internal sealed class PowerStateIngestor : IngestBase
         MqttClientFactory clientFactory,
         IServiceScopeFactory serviceScopeFactory,
         ILogger<PowerStateIngestor> logger)
-        : base("board/+/power", options, clientFactory, serviceScopeFactory, logger)
+        : base("board/+/power", "Ha-BoardPowerIngest", options, clientFactory, serviceScopeFactory, logger)
     {
     }
 

@@ -9,7 +9,7 @@ internal sealed class OtaStateIngestor : IngestBase
         MqttClientFactory clientFactory,
         IServiceScopeFactory serviceScopeFactory,
         ILogger<OtaStateIngestor> logger)
-        : base("board/+/ota", options, clientFactory, serviceScopeFactory, logger)
+        : base("board/+/ota", "Ha-BoardOtaIngest", options, clientFactory, serviceScopeFactory, logger)
     {
     }
 

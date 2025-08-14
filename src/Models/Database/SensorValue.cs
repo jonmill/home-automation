@@ -12,37 +12,37 @@ public sealed class SensorValue
     /// The unique identifier for the board.
     /// </summary>
     [PrimaryKey(Order = 1)]
-    [Column("board_id"), NotNull]
-    public required int BoardId { get; set; }
+    [Column("BoardSerialNumber"), NotNull]
+    public required string BoardSerialNumber { get; set; }
 
     /// <summary>
     /// The unique identifier for the sensor.
     /// </summary>
     [PrimaryKey(Order = 2)]
-    [Column("sensor_id"), NotNull]
-    public required int SensorId { get; set; }
+    [Column("SensorSerialNumber"), NotNull]
+    public required string SensorSerialNumber { get; set; }
 
     /// <summary>
     /// The timestamp when the sensor value was recorded.
     /// </summary>
-    [Column("timestamp"), NotNull]
+    [Column("Timestamp"), NotNull]
     public required DateTimeOffset Timestamp { get; set; }
 
     /// <summary>
     /// The value recorded by the sensor.
     /// </summary>
-    [Column("value"), NotNull]
+    [Column("Value"), NotNull]
     public required string Value { get; set; }
 
     /// <summary>
     /// The board associated with the sensor value.
     /// </summary>
-    [Association(ThisKey = nameof(BoardId), OtherKey = nameof(Board.Id))]
+    [Association(ThisKey = nameof(BoardSerialNumber), OtherKey = nameof(Board.SerialNumber))]
     public Board? Board { get; set; }
 
     /// <summary>
     /// The sensor associated with the sensor value.
     /// </summary>
-    [Association(ThisKey = nameof(SensorId), OtherKey = nameof(Sensor.Id))]
+    [Association(ThisKey = nameof(SensorSerialNumber), OtherKey = nameof(Sensor.SerialNumber))]
     public Sensor? Sensor { get; set; }
 }

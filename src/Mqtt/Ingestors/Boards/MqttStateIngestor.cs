@@ -9,7 +9,7 @@ internal sealed class MqttStateIngestor : IngestBase
         MqttClientFactory clientFactory,
         IServiceScopeFactory serviceScopeFactory,
         ILogger<MqttStateIngestor> logger)
-        : base("board/+/mqtt", options, clientFactory, serviceScopeFactory, logger)
+        : base("board/+/mqtt", "Ha-MqttStateIngesr", options, clientFactory, serviceScopeFactory, logger)
     {
     }
 

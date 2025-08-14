@@ -1,5 +1,7 @@
-using System.Text.Json;
+using HomeAutomation.Models.Mqtt.Serializers;
 using MQTTnet;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace HomeAutomation.Mqtt.Ingestors;
 
@@ -16,6 +18,7 @@ internal abstract class IngestBase : IHostedService, IAsyncDisposable
 
     public IngestBase(
         string topic,
+        string clientId,
         MqttClientOptions options,
         MqttClientFactory clientFactory,
         IServiceScopeFactory serviceScopeFactory,
@@ -23,22 +26,23 @@ internal abstract class IngestBase : IHostedService, IAsyncDisposable
     {
         _client = clientFactory.CreateMqttClient();
         _options = options;
+        _options.ClientId = clientId;
         _clientFactory = clientFactory;
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
         _subscriptionOptions = _clientFactory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(_clientFactory.CreateTopicFilterBuilder().WithTopic(topic).Build())
-            .Build();
+            .WithTopicFilter(topic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce).Build();
         _unsubscribeOptions = _clientFactory.CreateUnsubscribeOptionsBuilder()
-            .WithTopicFilter(_clientFactory.CreateTopicFilterBuilder().WithTopic(topic).Build())
-            .Build();
+            .WithTopicFilter(topic).Build();
         _serializationOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
             AllowTrailingCommas = true,
             ReadCommentHandling = JsonCommentHandling.Skip,
             AllowOutOfOrderMetadataProperties = true,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString
         };
+        _serializationOptions.Converters.Add(new DataPayloadSerializer());
     }
 
     public async ValueTask DisposeAsync()
@@ -93,9 +97,23 @@ internal abstract class IngestBase : IHostedService, IAsyncDisposable
         else
         {
             _logger.LogInformation("Received MQTT message from {Topic}", e.ApplicationMessage.Topic);
-            string payload = e.ApplicationMessage.ConvertPayloadToString();
-            payload = payload.Replace("\x1b", string.Empty);
-            return OnMessageReceived(payload, e);
+
+            string payload = string.Empty;
+            Task result;
+
+            try
+            {
+                payload = e.ApplicationMessage.ConvertPayloadToString();
+                payload = payload.Replace("\x1b", string.Empty);
+                result = OnMessageReceived(payload, e);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing MQTT message from {Topic}: {Payload}", e.ApplicationMessage.Topic, payload);
+                result = Task.CompletedTask;
+            }
+
+            return result;
         }
     }
 

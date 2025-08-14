@@ -13,54 +13,60 @@ public sealed class Sensor
     /// The unique identifier for the sensor.
     /// </summary>
     [PrimaryKey, Identity]
-    [Column("id"), NotNull]
+    [Column("Id"), NotNull]
     public int Id { get; set; }
+
+    /// <summary>
+    /// The unique number for the sensor.
+    /// </summary>
+    [Column("SerialNumber"), NotNull]
+    public required string SerialNumber { get; set; }
 
     /// <summary>
     /// The name of the sensor.
     /// </summary>
-    [Column("name"), NotNull]
+    [Column("Name"), NotNull]
     public required string Name { get; set; }
 
     /// <summary>
     /// The measurement type of the sensor.
     /// </summary>
-    [Column("type"), NotNull]
+    [Column("Type"), NotNull]
     public required SensorTypes Type { get; set; }
 
     /// <summary>
     /// The unit of measurement for the sensor data.
     /// </summary>
-    [Column("unit"), NotNull]
+    [Column("Unit"), NotNull]
     public required UnitsOfMeasure Unit { get; set; }
 
     /// <summary>
     /// The unique identifier for the board the sensor is connected to.
     /// </summary>
-    [Column("board_id"), NotNull]
-    public int BoardId { get; set; }
+    [Column("BoardSerialNumber"), NotNull]
+    public int BoardSerialNumber { get; set; }
 
     /// <summary>
     /// The board the sensor is connected to.
     /// </summary>
-    [Association(ThisKey = nameof(BoardId), OtherKey = nameof(Board.Id))]
+    [Association(ThisKey = nameof(BoardSerialNumber), OtherKey = nameof(Board.SerialNumber))]
     public Board? Board { get; set; }
 
     /// <summary>
     /// The date and time when the sensor was added.
     /// </summary>
-    [Column("added_at"), NotNull]
+    [Column("AddedAt"), NotNull]
     public required DateTimeOffset AddedAt { get; set; }
 
     /// <summary>
     /// Indicates whether the sensor is deleted.
     /// </summary>
-    [Column("is_deleted"), NotNull]
+    [Column("IsDeleted"), NotNull]
     public required bool IsDeleted { get; set; }
 
     /// <summary>
     /// The date and time when the sensor was deleted.
     /// </summary>
-    [Column("deleted_on")]
+    [Column("DeletedOn")]
     public DateTimeOffset? DeletedOn { get; set; }
 }

@@ -1,4 +1,6 @@
 using HomeAutomation.Database;
+using HomeAutomation.Models.Database;
+using HomeAutomation.Mqtt.Services;
 using LinqToDB;
 using MQTTnet;
 using System.Text.Json;
@@ -7,13 +9,17 @@ namespace HomeAutomation.Mqtt.Ingestors.Boards;
 
 internal sealed class LoggingIngestor : IngestBase
 {
+    private readonly IDatabaseCache _databaseCache;
+
     public LoggingIngestor(
         MqttClientOptions options,
         MqttClientFactory clientFactory,
         IServiceScopeFactory serviceScopeFactory,
+        IDatabaseCache databaseCache,
         ILogger<LoggingIngestor> logger)
-        : base("board/+/logging", options, clientFactory, serviceScopeFactory, logger)
+        : base("board/+/logging", "Ha-BoardLoggerIngest", options, clientFactory, serviceScopeFactory, logger)
     {
+        _databaseCache = databaseCache;
     }
 
     protected override async Task OnMessageReceived(string payload, MqttApplicationMessageReceivedEventArgs e)
@@ -24,10 +30,28 @@ internal sealed class LoggingIngestor : IngestBase
             return;
         }
 
-        Models.Mqtt.LogEvent? logEntry = JsonSerializer.Deserialize<Models.Mqtt.LogEvent>(payload, _serializationOptions);
+        Models.Mqtt.LogEvent? logEntry;
+
+        try
+        {
+            logEntry = JsonSerializer.Deserialize<Models.Mqtt.LogEvent>(payload, _serializationOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to deserialize log entry payload: {Payload}", payload);
+            return;
+        }
+
         if (logEntry is null)
         {
             _logger.LogWarning("Failed to deserialize log entry from payload: {Payload}", payload);
+            return;
+        }
+
+        Board? board = await _databaseCache.GetBoardAsync(logEntry.BoardId.ToString());
+        if (board is null)
+        {
+            _logger.LogWarning("Log entry received for unknown board: {BoardId}", logEntry.BoardId);
             return;
         }
 
@@ -38,7 +62,7 @@ internal sealed class LoggingIngestor : IngestBase
             using HomeAutomationDb dbContext = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
             await dbContext.InsertAsync(new Models.Database.LogEntry
             {
-                BoardId = logEntry.BoardId,
+                BoardSerialNumber = logEntry.BoardId.ToString(),
                 Timestamp = logEntry.Timestamp,
                 Level = logEntry.Level,
                 Message = logEntry.Message ?? "[Null]",

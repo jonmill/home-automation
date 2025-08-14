@@ -8,12 +8,15 @@ namespace HomeAutomation.Models.Mqtt;
 public sealed class Heartbeat : ICloudEvent
 {
     /// <inheritdoc />
+    [JsonPropertyName("source")]
     public required int BoardId { get; set; }
 
     /// <inheritdoc />
+    [JsonPropertyName("time")]
     public required DateTimeOffset Timestamp { get; set; }
 
     /// <inheritdoc />
+    [JsonPropertyName("content_type")]
     public required string ContentType { get; set; }
 
     /// <summary>

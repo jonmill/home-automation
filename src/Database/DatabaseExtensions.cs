@@ -1,7 +1,7 @@
 using FluentMigrator.Runner;
 using LinqToDB;
-using LinqToDB.AspNet;
-using LinqToDB.AspNet.Logging;
+using LinqToDB.Extensions.DependencyInjection;
+using LinqToDB.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -25,11 +25,8 @@ public static class DatabaseExtensions
                 ?? throw new InvalidOperationException("Connection string 'HomeAutomationDb' is not configured.");
 
             // Configure the database connection string
-            options.UsePostgreSQL(LinqToDB.DataProvider.PostgreSQL.PostgreSQLVersion.AutoDetect)
-                   .UseConnectionString(connectionString)
+            return options.UsePostgreSQL(connectionString: connectionString, LinqToDB.DataProvider.PostgreSQL.PostgreSQLVersion.v18)
                    .UseDefaultLogging(provider);
-
-            return options;
         });
 
         services.AddFluentMigratorCore()

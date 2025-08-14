@@ -9,7 +9,7 @@ internal sealed class InternalTemperatureIngestor : IngestBase
         MqttClientFactory clientFactory,
         IServiceScopeFactory serviceScopeFactory,
         ILogger<InternalTemperatureIngestor> logger)
-        : base("board/+/internal_temperature", options, clientFactory, serviceScopeFactory, logger)
+        : base("board/+/internal_temperature", "Ha-BoardTempIngest", options, clientFactory, serviceScopeFactory, logger)
     {
     }
 
