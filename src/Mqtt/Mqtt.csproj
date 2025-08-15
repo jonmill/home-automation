@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>HomeAutomation.MQTT</AssemblyName>
     <UserSecretsId>46805548-c954-4b14-8f0d-e09e263614f7</UserSecretsId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <ContainerRepository>home-automation/mqtt-ingestor</ContainerRepository>
     <ContainerImageTags>latest;$(Version)</ContainerImageTags>
   </PropertyGroup>
