@@ -1,5 +1,13 @@
 name: Build and Publish Docker Images
 
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOTNET_VERSION: '9.0.100'
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
@@ -18,18 +26,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push mqtt-ingestor image
-        uses: docker/build-push-action@v4
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
         with:
-          context: ./src
-          file: ./src/cmd/mqtt-ingestor/Dockerfile
-          push: true
-          tags: ghcr.io/${{ github.repository }}/mqtt-ingestor:latest
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Build and push web image
-        uses: docker/build-push-action@v4
-        with:
-          context: ./src
-          file: ./src/cmd/web/Dockerfile
-          push: true
-          tags: ghcr.io/${{ github.repository }}/web:latest
+      - name: Build and Publish MQTT Ingest
+        run: dotnet publish --configuration Release --os linux --arch x64 /t:PublishContainer -p ContainerRegistry=ghcr.io ./src/Mqtt/Mqtt.csproj
+
+      - name: Build and Publish Web
+        run: dotnet publish --configuration Release --os linux --arch x64 /t:PublishContainer -p ContainerRegistry=ghcr.io ./src/Web/Web.csproj
