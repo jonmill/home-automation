@@ -7,6 +7,7 @@
 @using LinqToDB.Async
 
 <PageTitle>Dashboard</PageTitle>
+<MudStack>
 <MudGrid Style="margin: 20px" Spacing="10" Justify="Justify.FlexStart">
     <MudItem>
         <MudPaper Style="@($"padding: 12px; background: {_outsideTempColor}; color: black")">
@@ -34,8 +35,39 @@
     </MudItem>
 </MudGrid>
 
+<MudGrid Style="margin: 20px" Spacing="10" Justify="Justify.FlexStart">
+    <MudItem>
+        <MudPaper Style="@($"padding: 12px; background: {_outsideBoardLastSeenColor}; color: black")">
+            <MudText><strong>Weather Last Seen</strong></MudText>
+            <MudText Typo="Typo.body2">
+                @_outsideBoardLastSeen
+            </MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Style="@($"padding: 12px; background: {_noraRoomBoardLastSeenColor}; color: black")">
+            <MudText><strong>Nora Room Last Seen</strong></MudText>
+            <MudText Typo="Typo.body2">
+                @_noraRoomBoardLastSeen
+            </MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Style="@($"padding: 12px; background: {_securityBoardLastSeenColor}; color: black")">
+            <MudText><strong>Security Last Seen</strong></MudText>
+            <MudText Typo="Typo.body2">
+                @_securityBoardLastSeen
+            </MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+</MudStack>
+
 @code {
 
+    private const string WeatherBoardSerialNumber = "4";
+    private const string NoraRoomBoardSerialNumber = "6";
+    private const string SecurityBoardSerialNumber = "1";
     private const string OutsideTempSensorSerialNumber = "17";
     private const string NoraRoomTempSensorSerialNumber = "14";
     private const string NoraRoomAQISensorSerialNumber = "13";
@@ -45,6 +77,12 @@
     private string _noraRoomTempColor = Colors.Green.Lighten1;
     private string _noraRoomAQI = "Unknown";
     private string _noraRoomAqiColor = Colors.Green.Lighten1;
+    private string _outsideBoardLastSeen = "Unknown";
+    private string _outsideBoardLastSeenColor = Colors.Red.Darken1;
+    private string _noraRoomBoardLastSeen = "Unknown";
+    private string _noraRoomBoardLastSeenColor = Colors.Red.Darken1;
+    private string _securityBoardLastSeen = "Unknown";
+    private string _securityBoardLastSeenColor = Colors.Red.Darken1;
 
     [Inject]
     private IServiceScopeFactory ServiceScopeFactory { get; set; } = null!;
@@ -61,11 +99,17 @@
     {
         using IServiceScope scope = ServiceScopeFactory.CreateScope();
         using HomeAutomationDb dbContext = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
+        await RefreshEnvironmentalDataAsync(dbContext);
+        await RefreshHeartbeatDataAsync(dbContext);
+    }
+
+    private async Task RefreshEnvironmentalDataAsync(HomeAutomationDb dbContext)
+    {
         SensorValue? outsideTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == OutsideTempSensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
         SensorValue? noraRoomTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == NoraRoomTempSensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
         SensorValue? noraRoomAQI = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == NoraRoomAQISensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
 
-        if (int.TryParse(outsideTemp?.Value, out int outsideTempValue))
+        if (double.TryParse(outsideTemp?.Value, out double outsideTempValue))
         {
             _outsideTemp = $"{ConvertTempToF(outsideTempValue).ToString()} °F";
             _outsideTempColor = GetTemperatureStyleForValue(outsideTempValue);
@@ -75,7 +119,7 @@
             _outsideTemp = "Unknown";
         }
 
-        if (int.TryParse(noraRoomTemp?.Value, out int noraRoomTempValue))
+        if (double.TryParse(noraRoomTemp?.Value, out double noraRoomTempValue))
         {
             _noraRoomTemp = $"{ConvertTempToF(noraRoomTempValue).ToString()} °F";
             _noraRoomTempColor = GetTemperatureStyleForValue(noraRoomTempValue);
@@ -85,9 +129,9 @@
             _noraRoomTemp = "Unknown";
         }
 
-        if (int.TryParse(noraRoomAQI?.Value, out int aqi))
+        if (double.TryParse(noraRoomAQI?.Value, out double aqi))
         {
-            _noraRoomAQI = noraRoomAQI.Value;
+            _noraRoomAQI = Math.Round(aqi, 0).ToString();
             if (aqi <= 100)
             {
                 _noraRoomAqiColor = Colors.Green.Darken1;
@@ -108,8 +152,18 @@
         }
     }
 
-    private int ConvertTempToF(int celsius) => (int)((celsius * 9.0 / 5.0) + 32);
-    private string GetTemperatureStyleForValue(int temp) => temp switch
+    private async Task RefreshHeartbeatDataAsync(HomeAutomationDb dbContext)
+    {
+        Heartbeat? weatherHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber == WeatherBoardSerialNumber).OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
+        Heartbeat? noraRoomHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber == NoraRoomBoardSerialNumber).OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
+        Heartbeat? securityHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber == SecurityBoardSerialNumber).OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
+        SetHeartbeatLastSeen(weatherHeartbeat, ref _outsideBoardLastSeen, ref _outsideBoardLastSeenColor);
+        SetHeartbeatLastSeen(noraRoomHeartbeat, ref _noraRoomBoardLastSeen, ref _noraRoomBoardLastSeenColor);
+        SetHeartbeatLastSeen(securityHeartbeat, ref _securityBoardLastSeen, ref _securityBoardLastSeenColor);
+    }
+
+    private double ConvertTempToF(double celsius) => Math.Round((celsius * 9.0 / 5.0) + 32, 0);
+    private string GetTemperatureStyleForValue(double temp) => temp switch
     {
         <= 32 => Colors.Blue.Darken2,
         <= 55 => Colors.Blue.Lighten2,
@@ -117,4 +171,47 @@
         <= 80 => Colors.Orange.Darken2,
         _ => Colors.Orange.Darken4
     };
+    private void SetHeartbeatLastSeen(Heartbeat? heartbeat, ref string lastSeen, ref string color)
+    {
+        if (heartbeat == null)
+        {
+            lastSeen = "Unknown";
+            color = Colors.Red.Darken1;
+        }
+        else
+        {
+            TimeSpan timeSinceLastSeen = DateTimeOffset.UtcNow - heartbeat.Timestamp;
+            if (timeSinceLastSeen.TotalMinutes <= 1)
+            {
+                lastSeen = "Online";
+                color = Colors.Green.Darken1;
+            }
+            else
+            {
+                int minutesSince = (int)timeSinceLastSeen.TotalMinutes;
+                int hoursSince = (int)timeSinceLastSeen.TotalHours;
+                int daysSince = (int)timeSinceLastSeen.TotalDays;
+                if (daysSince > 0)
+                {
+                    lastSeen = $"{daysSince} day{(daysSince > 1 ? "s" : "")} ago";
+                    color = Colors.Red.Darken1;
+                }
+                else if (hoursSince > 0)
+                {
+                    lastSeen = $"{hoursSince} hour{(hoursSince > 1 ? "s" : "")} ago";
+                    color = Colors.Red.Darken1;
+                }
+                else if (minutesSince > 0)
+                {
+                    lastSeen = $"{minutesSince} minute{(minutesSince > 1 ? "s" : "")} ago";
+                    color = Colors.Red.Darken1;
+                }
+                else
+                {
+                    lastSeen = "Unknown";
+                    color = Colors.Red.Darken1;
+                }
+            }
+        }
+    }
 }

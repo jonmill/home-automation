@@ -51,6 +51,6 @@ sensor:
     id: iaq
     # calculation: comp_gas = log(R_gas[ohm]) + 0.04 log(Ohm)/%rh * hum[%rh]
     lambda: |-
-      return log(id(gas_resistance).state) + 0.04 *  id(air_humidity).state;
+      return log(id(gas_resistance).state) + 0.04 * id(air_humidity).state;
     state_class: "measurement"
     update_interval: 20min

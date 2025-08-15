@@ -53,7 +53,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "5202:5202"
+      - "5202:8080"
     networks:
       - mqtt-net
 
