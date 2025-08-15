@@ -1,0 +1,120 @@
+﻿@namespace HomeAutomation.Web.Components.Pages
+
+@page "/"
+@using HomeAutomation.Database
+@using HomeAutomation.Models.Database
+@using HomeAutomation.Web.Services
+@using LinqToDB.Async
+
+<PageTitle>Dashboard</PageTitle>
+<MudGrid Style="margin: 20px" Spacing="10" Justify="Justify.FlexStart">
+    <MudItem>
+        <MudPaper Style="@($"padding: 12px; background: {_outsideTempColor}; color: black")">
+            <MudText><strong>Outside Temp</strong></MudText>
+            <MudText Typo="Typo.body2">
+                @_outsideTemp
+            </MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Style="@($"padding: 12px; background: {_noraRoomTempColor}; color: black")">
+            <MudText><strong>Nora Room Temp</strong></MudText>
+            <MudText Typo="Typo.body2">
+                @_noraRoomTemp
+            </MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Style="@($"padding: 12px; background: {_noraRoomAqiColor}; color: black")">
+            <MudText><strong>Nora Room AQI</strong></MudText>
+            <MudText Typo="Typo.body2">
+                @_noraRoomAQI
+            </MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+
+    private const string OutsideTempSensorSerialNumber = "17";
+    private const string NoraRoomTempSensorSerialNumber = "14";
+    private const string NoraRoomAQISensorSerialNumber = "13";
+    private string _outsideTemp = "Unknown";
+    private string _outsideTempColor = Colors.Blue.Lighten1;
+    private string _noraRoomTemp = "Unknown";
+    private string _noraRoomTempColor = Colors.Green.Lighten1;
+    private string _noraRoomAQI = "Unknown";
+    private string _noraRoomAqiColor = Colors.Green.Lighten1;
+
+    [Inject]
+    private IServiceScopeFactory ServiceScopeFactory { get; set; } = null!;
+
+    [Inject]
+    private ThemeService ThemeService { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshDataAsync();
+    }
+
+    private async Task RefreshDataAsync()
+    {
+        using IServiceScope scope = ServiceScopeFactory.CreateScope();
+        using HomeAutomationDb dbContext = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
+        SensorValue? outsideTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == OutsideTempSensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? noraRoomTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == NoraRoomTempSensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? noraRoomAQI = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == NoraRoomAQISensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+
+        if (int.TryParse(outsideTemp?.Value, out int outsideTempValue))
+        {
+            _outsideTemp = $"{ConvertTempToF(outsideTempValue).ToString()} °F";
+            _outsideTempColor = GetTemperatureStyleForValue(outsideTempValue);
+        }
+        else
+        {
+            _outsideTemp = "Unknown";
+        }
+
+        if (int.TryParse(noraRoomTemp?.Value, out int noraRoomTempValue))
+        {
+            _noraRoomTemp = $"{ConvertTempToF(noraRoomTempValue).ToString()} °F";
+            _noraRoomTempColor = GetTemperatureStyleForValue(noraRoomTempValue);
+        }
+        else
+        {
+            _noraRoomTemp = "Unknown";
+        }
+
+        if (int.TryParse(noraRoomAQI?.Value, out int aqi))
+        {
+            _noraRoomAQI = noraRoomAQI.Value;
+            if (aqi <= 100)
+            {
+                _noraRoomAqiColor = Colors.Green.Darken1;
+            }
+            else if (aqi <= 200)
+            {
+                _noraRoomAqiColor = Colors.Orange.Darken1;
+            }
+            else
+            {
+                _noraRoomAqiColor = Colors.Red.Darken1;
+            }
+        }
+        else
+        {
+            _noraRoomAQI = "Unknown";
+            _noraRoomAqiColor = Colors.Red.Darken1;
+        }
+    }
+
+    private int ConvertTempToF(int celsius) => (int)((celsius * 9.0 / 5.0) + 32);
+    private string GetTemperatureStyleForValue(int temp) => temp switch
+    {
+        <= 32 => Colors.Blue.Darken2,
+        <= 55 => Colors.Blue.Lighten2,
+        <= 65 => Colors.Orange.Lighten3,
+        <= 80 => Colors.Orange.Darken2,
+        _ => Colors.Orange.Darken4
+    };
+}

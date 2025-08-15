@@ -1,31 +1,27 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Web.Data;
+using HomeAutomation.Database;
+using HomeAutomation.Web.Components;
+using HomeAutomation.Web.Services;
+using MudBlazor.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 
-var app = builder.Build();
+builder.Services.AddMudServices();
+builder.Services.AddSingleton<ThemeService>();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+builder.Services.AddHomeAutomationDatabase(builder.Configuration);
 
-app.UseHttpsRedirection();
+WebApplication app = builder.Build();
 
-app.UseStaticFiles();
+app.UseExceptionHandler("/Error", createScopeForErrors: true);
 
-app.UseRouting();
+app.UseAntiforgery();
 
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.MapStaticAssets();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();

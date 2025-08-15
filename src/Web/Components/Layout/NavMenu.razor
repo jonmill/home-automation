@@ -1,0 +1,16 @@
+﻿@namespace HomeAutomation.Web.Components.Layout
+@using MudBlazor
+
+<MudNavMenu>
+    <MudStack>
+        <MudTooltip Text="Dashboard">
+            <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard" Match="NavLinkMatch.All">Dashboard</MudNavLink>
+        </MudTooltip>
+        <MudTooltip Text="Boards">
+            <MudNavLink Href="/boards" Icon="@Icons.Material.Filled.DeveloperBoard">Boards</MudNavLink>
+        </MudTooltip>
+        <MudTooltip Text="Sensors">
+            <MudNavLink Href="/sensors" Icon="@Icons.Material.Filled.Sensors">Sensors</MudNavLink>
+        </MudTooltip>
+    </MudStack>
+</MudNavMenu>
