@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.4.0"></a>
+## [1.4.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.4.0) (2025-08-16)
+
+### Features
+
+* Fixing MQTT keepalive, adding Security to dashboard ([d603bdb](https://www.github.com/jonmill/home-automation/commit/d603bdb2bd7bf117795516b8fa0a9cf973f0e1ee))
+
 <a name="1.3.2"></a>
 ## [1.3.2](https://www.github.com/jonmill/home-automation/releases/tag/v1.3.2) (2025-08-16)
 
