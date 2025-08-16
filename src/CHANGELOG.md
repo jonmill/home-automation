@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.3.1"></a>
+## [1.3.1](https://www.github.com/jonmill/home-automation/releases/tag/v1.3.1) (2025-08-16)
+
+### Bug Fixes
+
+* Fixing broken production URL ([696e18a](https://www.github.com/jonmill/home-automation/commit/696e18a9bc393b9709d9709b20dea6d937fbe557))
+
 <a name="1.3.0"></a>
 ## [1.3.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.3.0) (2025-08-16)
 
