@@ -15,6 +15,10 @@
             <MudText Typo="Typo.body2">
                 @_outsideTemp
             </MudText>
+            <MudSpacer />
+            <MudText Typo="Typo.subtitle2" Style="@($"background: {_outsideTempLastReadColor}; margin-top: 10px;")">
+                @_outsideTempLastRead
+            </MudText>
         </MudPaper>
     </MudItem>
     <MudItem>
@@ -23,6 +27,10 @@
             <MudText Typo="Typo.body2">
                 @_noraRoomTemp
             </MudText>
+            <MudSpacer />
+            <MudText Typo="Typo.subtitle2" Style="@($"background: {_noraRoomTempLastReadColor}; margin-top: 10px;")">
+                @_noraRoomTempLastRead
+            </MudText>
         </MudPaper>
     </MudItem>
     <MudItem>
@@ -30,6 +38,10 @@
             <MudText><strong>Nora Room AQI</strong></MudText>
             <MudText Typo="Typo.body2">
                 @_noraRoomAQI
+            </MudText>
+            <MudSpacer />
+            <MudText Typo="Typo.subtitle2" Style="@($"background: {_noraRoomAQILastReadColor}; margin-top: 10px;")">
+                @_noraRoomAQILastRead
             </MudText>
         </MudPaper>
     </MudItem>
@@ -73,10 +85,16 @@
     private const string NoraRoomAQISensorSerialNumber = "13";
     private string _outsideTemp = "Unknown";
     private string _outsideTempColor = Colors.Blue.Lighten1;
+    private string _outsideTempLastRead = "ago";
+    private string _outsideTempLastReadColor = Colors.Blue.Lighten1;
     private string _noraRoomTemp = "Unknown";
     private string _noraRoomTempColor = Colors.Green.Lighten1;
+    private string _noraRoomTempLastRead = "ago";
+    private string _noraRoomTempLastReadColor = Colors.Green.Lighten1;
     private string _noraRoomAQI = "Unknown";
     private string _noraRoomAqiColor = Colors.Green.Lighten1;
+    private string _noraRoomAQILastRead = "ago";
+    private string _noraRoomAQILastReadColor = Colors.Green.Lighten1;
     private string _outsideBoardLastSeen = "Unknown";
     private string _outsideBoardLastSeenColor = Colors.Red.Darken1;
     private string _noraRoomBoardLastSeen = "Unknown";
@@ -108,11 +126,13 @@
         SensorValue? outsideTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == OutsideTempSensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
         SensorValue? noraRoomTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == NoraRoomTempSensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
         SensorValue? noraRoomAQI = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == NoraRoomAQISensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        DateTimeOffset now = DateTimeOffset.UtcNow;
 
         if (double.TryParse(outsideTemp?.Value, out double outsideTempValue))
         {
             _outsideTemp = $"{ConvertTempToF(outsideTempValue).ToString()} °F";
             _outsideTempColor = GetTemperatureStyleForValue(outsideTempValue);
+            (_outsideTempLastRead, _outsideTempLastReadColor) = GetTimeAgoString(now - outsideTemp.Timestamp);
         }
         else
         {
@@ -123,6 +143,7 @@
         {
             _noraRoomTemp = $"{ConvertTempToF(noraRoomTempValue).ToString()} °F";
             _noraRoomTempColor = GetTemperatureStyleForValue(noraRoomTempValue);
+            (_noraRoomTempLastRead, _noraRoomTempLastReadColor) = GetTimeAgoString(now - noraRoomTemp.Timestamp);
         }
         else
         {
@@ -132,6 +153,7 @@
         if (double.TryParse(noraRoomAQI?.Value, out double aqi))
         {
             _noraRoomAQI = Math.Round(aqi, 0).ToString();
+            (_noraRoomAQILastRead, _noraRoomAQILastReadColor) = GetTimeAgoString(now - noraRoomAQI.Timestamp);
             if (aqi <= 100)
             {
                 _noraRoomAqiColor = Colors.Green.Darken1;
@@ -171,6 +193,37 @@
         <= 80 => Colors.Orange.Darken2,
         _ => Colors.Orange.Darken4
     };
+    private (string text, string color) GetTimeAgoString(TimeSpan ago)
+    {
+        int minutesSince = (int)ago.TotalMinutes;
+        int hoursSince = (int)ago.TotalHours;
+        int daysSince = (int)ago.TotalDays;
+        if (daysSince > 0)
+        {
+            return ($"{daysSince} day{(daysSince > 1 ? "s" : "")} ago", Colors.Red.Darken1);
+        }
+        else if (hoursSince > 0)
+        {
+            return ($"{hoursSince} hour{(hoursSince > 1 ? "s" : "")} ago", Colors.Red.Darken1);
+        }
+        else if (minutesSince >= 30)
+        {
+            return ($"{minutesSince} minute{(minutesSince > 1 ? "s" : "")} ago", Colors.Red.Darken1);
+        }
+        else if (minutesSince == 1)
+        {
+            return ($"{minutesSince} minute ago", Colors.Green.Darken1);
+        }
+        else if (minutesSince < 1)
+        {
+            return ("Just now", Colors.Green.Darken1);
+        }
+        else
+        {
+            return ("Unknown", Colors.Red.Darken1);
+        }
+    }
+
     private void SetHeartbeatLastSeen(Heartbeat? heartbeat, ref string lastSeen, ref string color)
     {
         if (heartbeat == null)
@@ -188,29 +241,7 @@
             }
             else
             {
-                int minutesSince = (int)timeSinceLastSeen.TotalMinutes;
-                int hoursSince = (int)timeSinceLastSeen.TotalHours;
-                int daysSince = (int)timeSinceLastSeen.TotalDays;
-                if (daysSince > 0)
-                {
-                    lastSeen = $"{daysSince} day{(daysSince > 1 ? "s" : "")} ago";
-                    color = Colors.Red.Darken1;
-                }
-                else if (hoursSince > 0)
-                {
-                    lastSeen = $"{hoursSince} hour{(hoursSince > 1 ? "s" : "")} ago";
-                    color = Colors.Red.Darken1;
-                }
-                else if (minutesSince > 0)
-                {
-                    lastSeen = $"{minutesSince} minute{(minutesSince > 1 ? "s" : "")} ago";
-                    color = Colors.Red.Darken1;
-                }
-                else
-                {
-                    lastSeen = "Unknown";
-                    color = Colors.Red.Darken1;
-                }
+                (lastSeen, color) = GetTimeAgoString(timeSinceLastSeen);
             }
         }
     }

@@ -47,8 +47,8 @@ public sealed class InitialMigration : Migration
             .FromTable(TableNames.Sensors).ForeignColumn("BoardSerialNumber")
             .ToTable(TableNames.Boards).PrimaryColumn("SerialNumber");
         Create.Table(TableNames.SensorValues)
-            .WithColumn("BoardSerialNumber").AsString().PrimaryKey().NotNullable()
-            .WithColumn("SensorSerialNumber").AsString().PrimaryKey().NotNullable()
+            .WithColumn("BoardSerialNumber").AsString().NotNullable()
+            .WithColumn("SensorSerialNumber").AsString().NotNullable()
             .WithColumn("Value").AsString().NotNullable()
             .WithColumn("Timestamp").AsDateTimeOffset().NotNullable();
         Create.ForeignKey("fk_sensorvalues_boards")
