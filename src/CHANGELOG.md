@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.3"></a>
+## [1.2.3](https://www.github.com/jonmill/home-automation/releases/tag/v1.2.3) (2025-08-15)
+
+### Bug Fixes
+
+* Fixing last seen color value ([660c9cd](https://www.github.com/jonmill/home-automation/commit/660c9cdff98371d09bf844ab9ffea29f775d27af))
+
 <a name="1.2.2"></a>
 ## [1.2.2](https://www.github.com/jonmill/home-automation/releases/tag/v1.2.2) (2025-08-15)
 
