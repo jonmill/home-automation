@@ -5,6 +5,10 @@ using MudBlazor.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddUserSecrets(typeof(Program).Assembly, optional: true)
+                     .AddJsonFile("appsettings.json", optional: false)
+                     .AddEnvironmentVariables();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

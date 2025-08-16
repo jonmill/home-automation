@@ -5,6 +5,7 @@
 @using HomeAutomation.Models.Database
 @using HomeAutomation.Web.Services
 @using LinqToDB.Async
+@using MQTTnet.Packets
 
 <PageTitle>Dashboard</PageTitle>
 <MudStack>
@@ -12,68 +13,135 @@
     {
         <MudProgressCircular Indeterminate Color="Color.Primary" Size="Size.Large" />
     }
-    <MudGrid Style="margin: 20px" Spacing="10" Justify="Justify.FlexStart">
+    <MudText Typo="Typo.h3" Style="margin: 20px 0px 0px 20px;">Nora's Room</MudText>
+    <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
         <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {_outsideTempColor}; color: black")">
-                <MudText><strong>Outside Temp</strong></MudText>
+            <MudPaper Style="@($"padding: 12px; background: {NoraRoom.TemperatureStyle}; color: black")">
+                <MudText><strong>Temperature</strong></MudText>
                 <MudText Typo="Typo.body2">
-                    @_outsideTemp
+                    @NoraRoom.TemperatureString
                 </MudText>
                 <MudSpacer />
                 <MudText Typo="Typo.subtitle2" Style="margin-top: 10px;">
-                    @_outsideTempLastRead
+                    @NoraRoom.TemperatureLastMeasurement
                 </MudText>
             </MudPaper>
         </MudItem>
         <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {_noraRoomTempColor}; color: black")">
-                <MudText><strong>Nora Room Temp</strong></MudText>
+            <MudPaper Style="@($"padding: 12px; background: {NoraRoom.HumidityStyle}; color: black")">
+                <MudText><strong>Humidity</strong></MudText>
                 <MudText Typo="Typo.body2">
-                    @_noraRoomTemp
+                    @NoraRoom.HumidityString
                 </MudText>
                 <MudSpacer />
-                <MudText Typo="Typo.subtitle2"
-                    Style="margin-top: 10px;">
-                    @_noraRoomTempLastRead
+                <MudText Typo="Typo.subtitle2" Style="margin-top: 10px;">
+                    @NoraRoom.HumidityLastMeasurement
                 </MudText>
             </MudPaper>
         </MudItem>
         <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {_noraRoomAqiColor}; color: black")">
-                <MudText><strong>Nora Room AQI</strong></MudText>
+            <MudPaper Style="@($"padding: 12px; background: {NoraRoom.PressureStyle}; color: black")">
+                <MudText><strong>Pressure</strong></MudText>
                 <MudText Typo="Typo.body2">
-                    @_noraRoomAQI
+                    @NoraRoom.PressureString
                 </MudText>
                 <MudSpacer />
                 <MudText Typo="Typo.subtitle2" Style="margin-top: 10px;">
-                    @_noraRoomAQILastRead
+                    @NoraRoom.PressureLastMeasurement
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {NoraRoom.AQIStyle}; color: black")">
+                <MudText><strong>AQI</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @NoraRoom.AQIString
+                </MudText>
+                <MudSpacer />
+                <MudText Typo="Typo.subtitle2" Style="margin-top: 10px;">
+                    @NoraRoom.AQILastMeasurement
                 </MudText>
             </MudPaper>
         </MudItem>
     </MudGrid>
 
-    <MudGrid Style="margin: 20px" Spacing="10" Justify="Justify.FlexStart">
+    <MudSpacer />
+    <MudText Typo="Typo.h3" Style="margin: 0px 0px 0px 20px;">Outside</MudText>
+    <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
         <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {_outsideBoardLastSeenColor}; color: black")">
+            <MudPaper Style="@($"padding: 12px; background: {Outside.TemperatureStyle}; color: black")">
+                <MudText><strong>Temperature</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @Outside.TemperatureString
+                </MudText>
+                <MudSpacer />
+                <MudText Typo="Typo.subtitle2" Style="margin-top: 10px;">
+                    @Outside.TemperatureLastMeasurement
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {Outside.HumidityStyle}; color: black")">
+                <MudText><strong>Humidity</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @Outside.HumidityString
+                </MudText>
+                <MudSpacer />
+                <MudText Typo="Typo.subtitle2" Style="margin-top: 10px;">
+                    @Outside.HumidityLastMeasurement
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {Outside.PressureStyle}; color: black")">
+                <MudText><strong>Pressure</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @Outside.PressureString
+                </MudText>
+                <MudSpacer />
+                <MudText Typo="Typo.subtitle2" Style="margin-top: 10px;">
+                    @Outside.PressureLastMeasurement
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {Outside.AQIStyle}; color: black")">
+                <MudText><strong>AQI</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @Outside.AQIString
+                </MudText>
+                <MudSpacer />
+                <MudText Typo="Typo.subtitle2" Style="margin-top: 10px;">
+                    @Outside.AQILastMeasurement
+                </MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudSpacer />
+    <MudText Typo="Typo.h3" Style="margin: 0px 0px 0px 20px;">System Status</MudText>
+    <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {WeatherStationHeartbeat.HeartbeatStyle}; color: black")">
                 <MudText><strong>Weather Station</strong></MudText>
                 <MudText Typo="Typo.body2">
-                    @_outsideBoardLastSeen
+                    @WeatherStationHeartbeat.HeartbeatText
                 </MudText>
             </MudPaper>
         </MudItem>
         <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {_noraRoomBoardLastSeenColor}; color: black")">
+            <MudPaper Style="@($"padding: 12px; background: {NoraRoomHeartbeat.HeartbeatStyle}; color: black")">
                 <MudText><strong>Nora Room</strong></MudText>
                 <MudText Typo="Typo.body2">
-                    @_noraRoomBoardLastSeen
+                    @NoraRoomHeartbeat.HeartbeatText
                 </MudText>
             </MudPaper>
         </MudItem>
         <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {_securityBoardLastSeenColor}; color: black")">
+            <MudPaper Style="@($"padding: 12px; background: {SecuritySystemHeartbeat.HeartbeatStyle}; color: black")">
                 <MudText><strong>Security System</strong></MudText>
                 <MudText Typo="Typo.body2">
-                    @_securityBoardLastSeen
+                    @SecuritySystemHeartbeat.HeartbeatText
                 </MudText>
             </MudPaper>
         </MudItem>
@@ -81,28 +149,11 @@
 </MudStack>
 
 @code {
-
-    private const string WeatherBoardSerialNumber = "4";
-    private const string NoraRoomBoardSerialNumber = "6";
-    private const string SecurityBoardSerialNumber = "1";
-    private const string OutsideTempSensorSerialNumber = "17";
-    private const string NoraRoomTempSensorSerialNumber = "14";
-    private const string NoraRoomAQISensorSerialNumber = "13";
-    private string _outsideTemp = "Unknown";
-    private string _outsideTempColor = Colors.Blue.Lighten1;
-    private string _outsideTempLastRead = "ago";
-    private string _noraRoomTemp = "Unknown";
-    private string _noraRoomTempColor = Colors.Green.Lighten1;
-    private string _noraRoomTempLastRead = "ago";
-    private string _noraRoomAQI = "Unknown";
-    private string _noraRoomAqiColor = Colors.Green.Lighten1;
-    private string _noraRoomAQILastRead = "ago";
-    private string _outsideBoardLastSeen = "Unknown";
-    private string _outsideBoardLastSeenColor = Colors.Red.Darken1;
-    private string _noraRoomBoardLastSeen = "Unknown";
-    private string _noraRoomBoardLastSeenColor = Colors.Red.Darken1;
-    private string _securityBoardLastSeen = "Unknown";
-    private string _securityBoardLastSeenColor = Colors.Red.Darken1;
+    private EnvironmentData Outside = new();
+    private EnvironmentData NoraRoom = new();
+    private HeartbeatData WeatherStationHeartbeat = new();
+    private HeartbeatData NoraRoomHeartbeat = new();
+    private HeartbeatData SecuritySystemHeartbeat = new();
 
     [Inject]
     private IServiceScopeFactory ServiceScopeFactory { get; set; } = null!;
@@ -137,136 +188,31 @@
 
     private async Task RefreshEnvironmentalDataAsync(HomeAutomationDb dbContext)
     {
-        SensorValue? outsideTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
-        OutsideTempSensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? noraRoomTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
-        NoraRoomTempSensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? noraRoomAQI = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
-        NoraRoomAQISensorSerialNumber).OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-
-        if (double.TryParse(outsideTemp?.Value, out double outsideTempValue))
-        {
-            _outsideTemp = $"{ConvertTempToF(outsideTempValue).ToString()} °F";
-            _outsideTempColor = GetTemperatureStyleForValue(outsideTempValue);
-            (_outsideTempLastRead, _) = GetTimeAgoString(now - outsideTemp.Timestamp);
-        }
-        else
-        {
-            _outsideTemp = "Unknown";
-        }
-
-        if (double.TryParse(noraRoomTemp?.Value, out double noraRoomTempValue))
-        {
-            _noraRoomTemp = $"{ConvertTempToF(noraRoomTempValue).ToString()} °F";
-            _noraRoomTempColor = GetTemperatureStyleForValue(noraRoomTempValue);
-            (_noraRoomTempLastRead, _) = GetTimeAgoString(now - noraRoomTemp.Timestamp);
-        }
-        else
-        {
-            _noraRoomTemp = "Unknown";
-        }
-
-        if (double.TryParse(noraRoomAQI?.Value, out double aqi))
-        {
-            _noraRoomAQI = Math.Round(aqi, 0).ToString();
-            (_noraRoomAQILastRead, _) = GetTimeAgoString(now - noraRoomAQI.Timestamp);
-            if (aqi <= 100)
-            {
-                _noraRoomAqiColor = Colors.Green.Darken1;
-            }
-            else if (aqi <= 200)
-            {
-                _noraRoomAqiColor = Colors.Orange.Darken1;
-            }
-            else
-            {
-                _noraRoomAqiColor = Colors.Red.Darken1;
-            }
-        }
-        else
-        {
-            _noraRoomAQI = "Unknown";
-            _noraRoomAqiColor = Colors.Red.Darken1;
-        }
+        SensorValue? outsideTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "17").OrderByDescending(sv
+        => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? outsideHumidity = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
+        "18").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? outsidePressure = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
+        "19").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? noraRoomAQI = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "13").OrderByDescending(sv
+        => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? noraRoomTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "14").OrderByDescending(sv
+        => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? noraRoomPressure = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
+        "15").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? noraRoomHumidity = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
+        "16").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        NoraRoom = new EnvironmentData(noraRoomTemp, noraRoomHumidity, noraRoomPressure, noraRoomAQI);
+        Outside = new EnvironmentData(outsideTemp, outsideHumidity, outsidePressure, null);
     }
 
     private async Task RefreshHeartbeatDataAsync(HomeAutomationDb dbContext)
     {
-        Heartbeat? weatherHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber ==
-        WeatherBoardSerialNumber).OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
-        Heartbeat? noraRoomHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber ==
-        NoraRoomBoardSerialNumber).OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
-        Heartbeat? securityHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber ==
-        SecurityBoardSerialNumber).OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
-        SetHeartbeatLastSeen(weatherHeartbeat, ref _outsideBoardLastSeen, ref _outsideBoardLastSeenColor);
-        SetHeartbeatLastSeen(noraRoomHeartbeat, ref _noraRoomBoardLastSeen, ref _noraRoomBoardLastSeenColor);
-        SetHeartbeatLastSeen(securityHeartbeat, ref _securityBoardLastSeen, ref _securityBoardLastSeenColor);
-    }
-
-    private double ConvertTempToF(double celsius) => Math.Round((celsius * 9.0 / 5.0) + 32, 0);
-    private string GetTemperatureStyleForValue(double temp) => temp switch
-    {
-        <= 32 => Colors.Blue.Darken2,
-        <= 55 => Colors.Blue.Lighten2,
-        <= 65 => Colors.Orange.Lighten3,
-        <= 80 => Colors.Orange.Darken2,
-        _ => Colors.Orange.Darken4
-    };
-    private (string text, string color) GetTimeAgoString(TimeSpan ago)
-    {
-        int minutesSince = (int)ago.TotalMinutes;
-        int hoursSince = (int)ago.TotalHours;
-        int daysSince = (int)ago.TotalDays;
-        if (daysSince > 0)
-        {
-            return ($"{daysSince} day{(daysSince > 1 ? "s" : "")} ago", Colors.Red.Darken1);
-        }
-        else if (hoursSince > 0)
-        {
-            return ($"{hoursSince} hour{(hoursSince > 1 ? "s" : "")} ago", Colors.Red.Darken1);
-        }
-        else if (minutesSince >= 30)
-        {
-            return ($"{minutesSince} minute{(minutesSince > 1 ? "s" : "")} ago", Colors.Red.Darken1);
-        }
-        else if (minutesSince >= 2)
-        {
-            return ($"{minutesSince} minutes ago", Colors.Yellow.Darken1);
-        }
-        else if (minutesSince == 1)
-        {
-            return ($"{minutesSince} minute ago", Colors.Green.Darken1);
-        }
-        else if (minutesSince < 1)
-        {
-            return ("Just now", Colors.Green.Darken1);
-        }
-        else
-        {
-            return ("Unknown", Colors.Red.Darken1);
-        }
-    }
-
-    private void SetHeartbeatLastSeen(Heartbeat? heartbeat, ref string lastSeen, ref string color)
-    {
-        if (heartbeat == null)
-        {
-            lastSeen = "Unknown";
-            color = Colors.Red.Darken1;
-        }
-        else
-        {
-            TimeSpan timeSinceLastSeen = DateTimeOffset.UtcNow - heartbeat.Timestamp;
-            if (timeSinceLastSeen.TotalMinutes <= 1)
-            {
-                lastSeen = "Online";
-                color = Colors.Green.Darken1;
-            }
-            else
-            {
-                (lastSeen, color) = GetTimeAgoString(timeSinceLastSeen);
-            }
-        }
+        Heartbeat? weatherHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber == "4").OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
+        Heartbeat? noraRoomHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber == "6").OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
+        Heartbeat? securityHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber == "1").OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
+        WeatherStationHeartbeat = new HeartbeatData(weatherHeartbeat);
+        NoraRoomHeartbeat = new HeartbeatData(noraRoomHeartbeat);
+        SecuritySystemHeartbeat = new HeartbeatData(securityHeartbeat);
     }
 }
