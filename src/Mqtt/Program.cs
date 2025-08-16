@@ -17,6 +17,7 @@ builder.Services.AddTransient<MqttClientOptions>(sp =>
         .WithTcpServer(brokerAddress, 1883)
         .WithCredentials("ha-mqtt", mqttPassword)
         .WithCleanSession(false)
+        .WithKeepAlivePeriod(TimeSpan.FromSeconds(5))
         .Build();
 });
 builder.Services.AddHostedService<SensorDataIngestor>()

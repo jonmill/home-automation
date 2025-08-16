@@ -134,7 +134,7 @@ esphome:
 
 safe_mode:
   boot_is_good_after: 45s
-  num_attempts: 5
+  num_attempts: 10
   reboot_timeout: 5min
 
 sensor:

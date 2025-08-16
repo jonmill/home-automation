@@ -104,9 +104,9 @@ public record EnvironmentData
     public string PressureLastMeasurement => LastMeasurementAgo(_pressureTimestamp);
     public string PressureStyle => RoundedPressure switch
     {
-        <= 980 => Colors.Red.Darken1,
-        <= 1000 => Colors.Orange.Darken1,
-        <= 1020 => Colors.Green.Darken1,
+        <= 980 => Colors.Blue.Darken2,
+        <= 1009 => Colors.Blue.Lighten2,
+        <= 1023 => Colors.Green.Darken1,
         <= 1040 => Colors.Orange.Darken1,
         _ => Colors.Red.Darken1
     };

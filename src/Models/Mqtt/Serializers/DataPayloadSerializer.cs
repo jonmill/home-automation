@@ -103,6 +103,10 @@ public sealed class DataPayloadSerializer : JsonConverter<DataPayload>
                                 dataValue = floatResult.ToString();
                             }
                         }
+                        else if (reader.TokenType == JsonTokenType.True || reader.TokenType == JsonTokenType.False)
+                        {
+                            dataValue = reader.GetBoolean().ToString();
+                        }
                         break;
                 }
             }

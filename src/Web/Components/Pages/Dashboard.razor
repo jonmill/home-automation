@@ -119,6 +119,59 @@
     </MudGrid>
 
     <MudSpacer />
+    <MudText Typo="Typo.h3" Style="margin: 0px 0px 0px 20px;">Security</MudText>
+    <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {FrontDoor.SecurityStyle}; color: black")">
+                <MudText><strong>Front Door</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @FrontDoor.SecurityText
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {LivingRoom1.SecurityStyle}; color: black")">
+                <MudText><strong>Living Room 1</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @LivingRoom1.SecurityText
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {LivingRoom2.SecurityStyle}; color: black")">
+                <MudText><strong>Living Room 2</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @LivingRoom2.SecurityText
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {DiningRoom.SecurityStyle}; color: black")">
+                <MudText><strong>Dining Room</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @DiningRoom.SecurityText
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {TVRoom.SecurityStyle}; color: black")">
+                <MudText><strong>TV Room</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @TVRoom.SecurityText
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {GarageDoor.SecurityStyle}; color: black")">
+                <MudText><strong>Garage Door</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @GarageDoor.SecurityText
+                </MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudSpacer />
     <MudText Typo="Typo.h3" Style="margin: 0px 0px 0px 20px;">System Status</MudText>
     <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
         <MudItem>
@@ -151,6 +204,12 @@
 @code {
     private EnvironmentData Outside = new();
     private EnvironmentData NoraRoom = new();
+    private SecurityData FrontDoor = new(null);
+    private SecurityData LivingRoom1 = new(null);
+    private SecurityData LivingRoom2 = new(null);
+    private SecurityData DiningRoom = new(null);
+    private SecurityData TVRoom = new(null);
+    private SecurityData GarageDoor = new(null);
     private HeartbeatData WeatherStationHeartbeat = new();
     private HeartbeatData NoraRoomHeartbeat = new();
     private HeartbeatData SecuritySystemHeartbeat = new();
@@ -181,6 +240,7 @@
         using IServiceScope scope = ServiceScopeFactory.CreateScope();
         using HomeAutomationDb dbContext = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
         await RefreshEnvironmentalDataAsync(dbContext);
+        await RefreshSecurityDataAsync(dbContext);
         await RefreshHeartbeatDataAsync(dbContext);
         _isRefreshing = false;
         await InvokeAsync(() => StateHasChanged());
@@ -204,6 +264,22 @@
         "16").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
         NoraRoom = new EnvironmentData(noraRoomTemp, noraRoomHumidity, noraRoomPressure, noraRoomAQI);
         Outside = new EnvironmentData(outsideTemp, outsideHumidity, outsidePressure, null);
+    }
+
+    private async Task RefreshSecurityDataAsync(HomeAutomationDb dbContext)
+    {
+        SensorValue? frontDoor = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "1").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? garageDoor = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "2").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? diningRoom = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "3").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? livingRoom1 = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "4").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? livingRoom2 = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "5").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? tvRoom = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "6").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        FrontDoor = new SecurityData(frontDoor);
+        LivingRoom1 = new SecurityData(livingRoom1);
+        LivingRoom2 = new SecurityData(livingRoom2);
+        DiningRoom = new SecurityData(diningRoom);
+        TVRoom = new SecurityData(tvRoom);
+        GarageDoor = new SecurityData(garageDoor);
     }
 
     private async Task RefreshHeartbeatDataAsync(HomeAutomationDb dbContext)
