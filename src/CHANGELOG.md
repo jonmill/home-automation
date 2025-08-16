@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.3.0"></a>
+## [1.3.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.3.0) (2025-08-16)
+
+### Features
+
+* Adding humidity + pressure tiles ([f08d69d](https://www.github.com/jonmill/home-automation/commit/f08d69dcdb24a4adc10904e5417df1cb3cbf44b1))
+
 <a name="1.2.3"></a>
 ## [1.2.3](https://www.github.com/jonmill/home-automation/releases/tag/v1.2.3) (2025-08-15)
 
