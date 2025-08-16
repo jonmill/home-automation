@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.1"></a>
+## [1.2.1](https://www.github.com/jonmill/home-automation/releases/tag/v1.2.1) (2025-08-15)
+
+### Bug Fixes
+
+* Fixing incorrect PK and adding last seen for values ([f722500](https://www.github.com/jonmill/home-automation/commit/f7225007074b7e6fa56a21710fa082578a8ac6d0))
+
 <a name="1.2.0"></a>
 ## [1.2.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.2.0) (2025-08-15)
 
