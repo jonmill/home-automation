@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.5.0"></a>
+## [1.5.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.5.0) (2025-08-16)
+
+### Features
+
+* Adding push subscriptions creation ([7bbcd92](https://www.github.com/jonmill/home-automation/commit/7bbcd92292f21afe44cd0dd14a523b6fe11d21c4))
+
 <a name="1.4.0"></a>
 ## [1.4.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.4.0) (2025-08-16)
 
