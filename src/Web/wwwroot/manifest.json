@@ -13,7 +13,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/dashboard",
+  "start_url": "https://home.jokora.dev/dashboard",
   "display": "standalone",
   "theme_color": "black",
   "background_color": "white"

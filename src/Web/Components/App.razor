@@ -29,6 +29,11 @@
         }
 
         async function enablePush() {
+            // Make sure notifications exist
+            if (!Notification) {
+                return;
+            }
+
             const perm = await Notification.requestPermission();
             if (perm !== 'granted') { alert('Permission denied'); return; }
 
