@@ -36,4 +36,9 @@ public sealed class HomeAutomationDb(DataOptions<HomeAutomationDb> options) : Da
     /// Gets the table for log entries.
     /// </summary>
     public ITable<LogEntry> LogEntries => this.GetTable<LogEntry>();
+
+    /// <summary>
+    /// Gets the table for push subscriptions.
+    /// </summary>
+    public ITable<PushSubscription> PushSubscriptions => this.GetTable<PushSubscription>();
 }

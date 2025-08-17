@@ -1,0 +1,28 @@
+@namespace HomeAutomation.Web.Components.Controls
+
+<MudItem>
+            <MudPaper Style="@($"padding: 12px; background: {BackgroundColor}; color: black")">
+                <MudText><strong>@Title</strong></MudText>
+                <MudText Typo="Typo.body2">
+                    @Value
+                </MudText>
+                <MudSpacer />
+                <MudText Typo="Typo.subtitle2" Style="margin-top: 10px;">
+                    @LastSeenString
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public string LastSeenString { get; set; } = string.Empty;
+
+    [Parameter]
+    public string BackgroundColor { get; set; } = "white";
+}

@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
     <ImportMap />
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" type="image/png" href="favicon-32x32.png" />
+    <link rel="manifest" href="/manifest.json">
     <HeadOutlet @rendermode="InteractiveServer" />
     <title>Home Automation Dashboard</title>
 </head>
@@ -19,6 +20,36 @@
     <Routes @rendermode="InteractiveServer" />
     <script src="_framework/blazor.web.js"></script>
     <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
+    <script>
+        async function urlB64ToUint8Array(b64) {
+            const pad = '='.repeat((4 - b64.length % 4) % 4);
+            const base64 = (b64 + pad).replace(/-/g, '+').replace(/_/g, '/');
+            const raw = atob(base64);
+            return Uint8Array.from([...raw].map(ch => ch.charCodeAt(0)));
+        }
+
+        async function enablePush() {
+            const perm = await Notification.requestPermission();
+            if (perm !== 'granted') { alert('Permission denied'); return; }
+
+            const reg = await navigator.serviceWorker.register('/service-worker.js');
+
+            let sub = await reg.pushManager.getSubscription();
+
+            if (!sub) {
+                sub = await (await navigator.serviceWorker.ready).pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: await urlB64ToUint8Array('BOFb2zZdWxnq-nmHR97L6ENV4s8KJUybWzlroniT3PYeYNo1JifG-BgdFkedkg9AkHCfzEuDwGIXJQsnvpN5uNw')
+                });
+            }
+
+            await fetch('/api/subscriptions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(sub)
+            });
+        }
+    </script>
 </body>
 
 </html>

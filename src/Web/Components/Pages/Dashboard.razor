@@ -220,6 +220,9 @@
     [Inject]
     private ThemeService ThemeService { get; set; } = null!;
 
+    [Inject]
+    private IJSRuntime JS { get; set; } = null!;
+
     private Timer _refreshTimer = null!;
     private bool _isRefreshing = false;
 
@@ -227,6 +230,14 @@
     {
         await RefreshDataAsync();
         _refreshTimer = new Timer(OnTimerCallback, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("enablePush");
+        }
     }
 
     private void OnTimerCallback(object? state)

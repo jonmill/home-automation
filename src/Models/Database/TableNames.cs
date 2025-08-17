@@ -29,4 +29,9 @@ internal static class TableNames
     /// The name of the table that stores heartbeat information.
     /// </summary>
     public const string Heartbeats = "Heartbeats";
+
+    /// <summary>
+    /// The name of the table that stores push subscription information.
+    /// </summary>
+    public const string PushSubscriptions = "PushSubscriptions";
 }

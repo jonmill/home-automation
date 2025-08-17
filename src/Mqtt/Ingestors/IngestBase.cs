@@ -87,33 +87,32 @@ internal abstract class IngestBase : IHostedService, IAsyncDisposable
         _logger.LogInformation("Unsubscribed from {Topic} and disconnected.", _subscriptionOptions.TopicFilters.First().Topic);
     }
 
-    private Task InternalOnMessageReceived(MqttApplicationMessageReceivedEventArgs e)
+    private async Task InternalOnMessageReceived(MqttApplicationMessageReceivedEventArgs e)
     {
         if (e.ApplicationMessage.Payload.IsEmpty || (e.ApplicationMessage.Payload.Length == 0))
         {
             _logger.LogWarning("Received empty MQTT message from {Topic}", e.ApplicationMessage.Topic);
-            return Task.CompletedTask;
         }
         else
         {
             _logger.LogInformation("Received MQTT message from {Topic}", e.ApplicationMessage.Topic);
 
             string payload = string.Empty;
-            Task result;
 
             try
             {
                 payload = e.ApplicationMessage.ConvertPayloadToString();
                 payload = payload.Replace("\x1b", string.Empty);
-                result = OnMessageReceived(payload, e);
+                await OnMessageReceived(payload, e);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing MQTT message from {Topic}: {Payload}", e.ApplicationMessage.Topic, payload);
-                result = Task.CompletedTask;
             }
-
-            return result;
+            finally
+            {
+                await e.AcknowledgeAsync(CancellationToken.None);
+            }
         }
     }
 
