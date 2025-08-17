@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.5.2"></a>
+## [1.5.2](https://www.github.com/jonmill/home-automation/releases/tag/v1.5.2) (2025-08-17)
+
+### Bug Fixes
+
+* Fixing broken web notification if they don't exist; fixing start_url ([5d0ecef](https://www.github.com/jonmill/home-automation/commit/5d0ecef5b8008a214379a9f54afb850aa151f74a))
+
 <a name="1.5.1"></a>
 ## [1.5.1](https://www.github.com/jonmill/home-automation/releases/tag/v1.5.1) (2025-08-17)
 
