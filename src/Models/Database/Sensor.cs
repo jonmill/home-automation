@@ -44,7 +44,7 @@ public sealed class Sensor
     /// The unique identifier for the board the sensor is connected to.
     /// </summary>
     [Column("BoardSerialNumber"), NotNull]
-    public int BoardSerialNumber { get; set; }
+    public required string BoardSerialNumber { get; set; }
 
     /// <summary>
     /// The board the sensor is connected to.

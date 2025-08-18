@@ -26,7 +26,9 @@ builder.Services.AddHostedService<SensorDataIngestor>()
                 .AddHostedService<LoggingIngestor>()
                 .AddHostedService<MqttStateIngestor>()
                 .AddHostedService<OtaStateIngestor>()
-                .AddHostedService<PowerStateIngestor>();
+                .AddHostedService<PowerStateIngestor>()
+                .AddHostedService<RingBoardAttributesIngestor>()
+                .AddHostedService<RingContactStateIngestor>();
 
 builder.Services.AddHomeAutomationDatabase(builder.Configuration);
 
