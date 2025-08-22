@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>HomeAutomation.Web</AssemblyName>
     <UserSecretsId>46805548-c954-4b14-8f0d-e09e263614f7</UserSecretsId>
-    <Version>1.5.4</Version>
+    <Version>1.6.0</Version>
     <ContainerRepository>jonmill/home-automation/web</ContainerRepository>
     <ContainerImageTags>latest;$(Version)</ContainerImageTags>
   </PropertyGroup>

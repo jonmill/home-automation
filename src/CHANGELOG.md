@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.6.0"></a>
+## [1.6.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.6.0) (2025-08-21)
+
+### Features
+
+* Adding Polly retry to Ingest ([f7fdc9f](https://www.github.com/jonmill/home-automation/commit/f7fdc9f288771642db54ae06afd47252b0feea55))
+* Adding Ring sensors to DB migration ([6176b1f](https://www.github.com/jonmill/home-automation/commit/6176b1f972a1db73773c78ae67b19a2de45055ac))
+* Adding support for Ring contact sensors ([1b886d9](https://www.github.com/jonmill/home-automation/commit/1b886d9783ebb37c7121a8ff835361ab9b2c0b65))
+
 <a name="1.5.4"></a>
 ## [1.5.4](https://www.github.com/jonmill/home-automation/releases/tag/v1.5.4) (2025-08-17)
 
