@@ -3,6 +3,8 @@ using HomeAutomation.Mqtt.Ingestors.Boards;
 using HomeAutomation.Mqtt.Ingestors.Sensors;
 using HomeAutomation.Mqtt.Services;
 using MQTTnet;
+using Polly;
+using Polly.Retry;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,19 @@ builder.Services.AddHostedService<SensorDataIngestor>()
                 .AddHostedService<PowerStateIngestor>()
                 .AddHostedService<RingBoardAttributesIngestor>()
                 .AddHostedService<RingContactStateIngestor>();
+
+builder.Services.AddResiliencePipeline("mqtt-pipeline", builder =>
+{
+    builder
+        .AddRetry(new RetryStrategyOptions()
+        {
+            BackoffType = DelayBackoffType.Constant,
+            Delay = TimeSpan.FromMilliseconds(500),
+            MaxRetryAttempts = 5,
+            UseJitter = false,
+        })
+        .AddTimeout(TimeSpan.FromSeconds(5));
+});
 
 builder.Services.AddHomeAutomationDatabase(builder.Configuration);
 

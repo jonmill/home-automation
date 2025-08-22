@@ -21,6 +21,8 @@
     <PackageReference Include="Lib.Net.Http.WebPush" Version="3.3.1" />
     <PackageReference Include="MQTTnet" Version="5.0.1.1416" />
     <PackageReference Include="Npgsql" Version="9.0.3" />
+    <PackageReference Include="Polly.Core" Version="8.6.2" />
+    <PackageReference Include="Polly.Extensions" Version="8.6.2" />
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />

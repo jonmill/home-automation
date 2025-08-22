@@ -1,5 +1,6 @@
 using HomeAutomation.Models.Mqtt.Serializers;
 using MQTTnet;
+using Polly;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -67,9 +68,16 @@ internal abstract class IngestBase : IHostedService, IAsyncDisposable
         // Figure out if we can do this with one client or do we need many?
         _logger.LogInformation("Starting MQTT client for {Topic}.", _subscriptionOptions.TopicFilters.First().Topic);
         _client.ApplicationMessageReceivedAsync += InternalOnMessageReceived;
-        await _client.ConnectAsync(_options, cancellationToken);
-        await _client.SubscribeAsync(_subscriptionOptions, cancellationToken);
-        _logger.LogInformation("Subscribed to {Topic}.", _subscriptionOptions.TopicFilters.First().Topic);
+
+        using IServiceScope scope = _serviceScopeFactory.CreateScope();
+        ResiliencePipeline pipeline = scope.ServiceProvider.GetRequiredKeyedService<ResiliencePipeline>("mqtt-pipeline");
+        await pipeline.ExecuteAsync(async token =>
+        {
+            _logger.LogInformation("Connecting to MQTT broker");
+            await _client.ConnectAsync(_options, token);
+            await _client.SubscribeAsync(_subscriptionOptions, token);
+            _logger.LogInformation("Connected to MQTT broker, subscribed to {Topic}.", _subscriptionOptions.TopicFilters.First().Topic);
+        }, cancellationToken);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
@@ -82,8 +90,13 @@ internal abstract class IngestBase : IHostedService, IAsyncDisposable
 
         _logger.LogInformation("Stopping MQTT client for {Topic}.", _subscriptionOptions.TopicFilters.First().Topic);
         _client.ApplicationMessageReceivedAsync -= InternalOnMessageReceived;
-        await _client.UnsubscribeAsync(_unsubscribeOptions, cancellationToken);
-        await _client.DisconnectAsync(MqttClientDisconnectOptionsReason.NormalDisconnection, cancellationToken: cancellationToken);
+        using IServiceScope scope = _serviceScopeFactory.CreateScope();
+        ResiliencePipeline pipeline = scope.ServiceProvider.GetRequiredKeyedService<ResiliencePipeline>("mqtt-pipeline");
+        await pipeline.ExecuteAsync(async token =>
+        {
+            await _client.UnsubscribeAsync(_unsubscribeOptions, token);
+            await _client.DisconnectAsync(MqttClientDisconnectOptionsReason.NormalDisconnection, cancellationToken: token);
+        }, cancellationToken);
         _logger.LogInformation("Unsubscribed from {Topic} and disconnected.", _subscriptionOptions.TopicFilters.First().Topic);
     }
 
@@ -96,6 +109,9 @@ internal abstract class IngestBase : IHostedService, IAsyncDisposable
         else
         {
             _logger.LogInformation("Received MQTT message from {Topic}", e.ApplicationMessage.Topic);
+
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ResiliencePipeline pipeline = scope.ServiceProvider.GetRequiredKeyedService<ResiliencePipeline>("mqtt-pipeline");
 
             string payload = string.Empty;
 
@@ -111,7 +127,11 @@ internal abstract class IngestBase : IHostedService, IAsyncDisposable
             }
             finally
             {
-                await e.AcknowledgeAsync(CancellationToken.None);
+                await pipeline.ExecuteAsync(async token =>
+                {
+                    _logger.LogDebug("Acknowledging MQTT message from {Topic}", e.ApplicationMessage.Topic);
+                    await e.AcknowledgeAsync(token);
+                }, CancellationToken.None);
             }
         }
     }
