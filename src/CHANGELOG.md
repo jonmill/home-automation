@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.6.1"></a>
+## [1.6.1](https://www.github.com/jonmill/home-automation/releases/tag/v1.6.1) (2025-08-23)
+
+### Bug Fixes
+
+* Fixing Ring Attributes payload serial number + serialization ([2906abc](https://www.github.com/jonmill/home-automation/commit/2906abc347955e2b498c32654d3fd33f9c0fdfd2))
+
 <a name="1.6.0"></a>
 ## [1.6.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.6.0) (2025-08-21)
 
