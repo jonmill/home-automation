@@ -50,31 +50,32 @@ internal sealed class RingBoardAttributesIngestor : IngestBase
             return;
         }
 
-        Board? board = await _databaseCache.GetBoardAsync(boardState.SerialNumber);
+        string serialNumber = string.IsNullOrEmpty(boardState.SerialNumber) ? parts[3] : boardState.SerialNumber;
+        Board? board = await _databaseCache.GetBoardAsync(serialNumber);
         if (board is null)
         {
-            _logger.LogWarning("Board with serial number {SerialNumber} not found in database.", boardState.SerialNumber);
+            _logger.LogWarning("Board with serial number {SerialNumber} not found in database.", serialNumber);
             return;
         }
 
-        _logger.LogInformation("Received Ring Board Attributes for {SerialNumber}: {BatteryLevel}", boardState.SerialNumber, boardState.BatteryLevel);
+        _logger.LogInformation("Received Ring Board Attributes for {SerialNumber}: {BatteryLevel}", serialNumber, boardState.BatteryLevel);
 
         try
         {
-            _logger.LogInformation("Inserting heartbeat for Ring Board {SerialNumber}", boardState.SerialNumber);
+            _logger.LogInformation("Inserting heartbeat for Ring Board {SerialNumber}", serialNumber);
             using IServiceScope scope = _serviceScopeFactory.CreateScope();
             using HomeAutomationDb db = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
             await db.InsertAsync<Heartbeat>(new Heartbeat()
             {
-                BoardSerialNumber = boardState.SerialNumber,
+                BoardSerialNumber = serialNumber,
                 NextExpectedHeartbeat = boardState.LastUpdate.AddHours(6), // Ring comms every 4-6 hours
                 Timestamp = boardState.LastUpdate,
             });
-            _logger.LogInformation("Successfully inserted heartbeat for Ring Board {SerialNumber}", boardState.SerialNumber);
+            _logger.LogInformation("Successfully inserted heartbeat for Ring Board {SerialNumber}", serialNumber);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to insert heartbeat for Ring Board {SerialNumber}", boardState.SerialNumber);
+            _logger.LogError(ex, "Failed to insert heartbeat for Ring Board {SerialNumber}", serialNumber);
             return;
         }
     }
