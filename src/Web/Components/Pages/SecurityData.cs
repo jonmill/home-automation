@@ -10,10 +10,10 @@ public record SecurityData
 
     public SecurityData(SensorValue? data)
     {
-        if (bool.TryParse(data?.Value, out bool isClosed))
+        if (bool.TryParse(data?.Value, out bool isOpen))
         {
-            SecurityText = isClosed ? "Closed" : "Open";
-            SecurityStyle = isClosed ? Colors.Green.Darken1 : Colors.Red.Darken1;
+            SecurityText = isOpen ? "Open" : "Closed";
+            SecurityStyle = isOpen ? Colors.Red.Darken1 : Colors.Green.Darken1;
         }
         else
         {
