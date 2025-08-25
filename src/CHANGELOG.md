@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.8.1"></a>
+## [1.8.1](https://www.github.com/jonmill/home-automation/releases/tag/v1.8.1) (2025-08-24)
+
+### Bug Fixes
+
+* Fixing battery level UI ([6bfbbf2](https://www.github.com/jonmill/home-automation/commit/6bfbbf265df4fab9d60fc2d287547049c985785f))
+
 <a name="1.8.0"></a>
 ## [1.8.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.8.0) (2025-08-24)
 
