@@ -24,6 +24,13 @@ public record HeartbeatData
     {
         SystemName = board.Name;
         (HeartbeatText, HeartbeatStyle) = DateTimeHelpers.ToFriendlyStringWithTimeBasedColor(heartbeat?.Timestamp);
-        BatteryText = $"{Math.Round(batteryInfo?.BatteryLevel ?? 0.0, 0)}%" ?? string.Empty;
+        if (batteryInfo is not null)
+        {
+            BatteryText = $"{Math.Round(batteryInfo.BatteryLevel, 0)}%" ?? string.Empty;
+        }
+        else
+        {
+            BatteryText = string.Empty;
+        }
     }
 }
