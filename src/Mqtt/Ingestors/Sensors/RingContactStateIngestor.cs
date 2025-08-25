@@ -51,7 +51,7 @@ internal sealed class RingContactStateIngestor : IngestBase
                 BoardSerialNumber = sensor.BoardSerialNumber,
                 SensorSerialNumber = serialNumber,
                 Timestamp = DateTimeOffset.UtcNow,
-                Value = isClosed ? bool.TrueString : bool.FalseString,
+                Value = isClosed ? bool.FalseString : bool.TrueString,
             });
             _logger.LogInformation("Successfully inserted Ring Contact State into database for sensor {SerialNumber}.", serialNumber);
         }

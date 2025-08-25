@@ -1,4 +1,5 @@
 using HomeAutomation.Models.Database;
+using HomeAutomation.Web.Components.Helpers;
 using MudBlazor;
 
 namespace HomeAutomation.Web.Components.Pages;
@@ -75,7 +76,7 @@ public record EnvironmentData
 
     private double RoundedTemperature => Math.Round((_temperature * 9.0 / 5.0) + 32, 0);
     public string TemperatureString => $"{RoundedTemperature} °F";
-    public string TemperatureLastMeasurement => LastMeasurementAgo(_tempTimestamp);
+    public string TemperatureLastMeasurement => DateTimeHelpers.GetFriendlyTimeString(_tempTimestamp);
     public string TemperatureStyle => RoundedTemperature switch
     {
         <= 32 => Colors.Blue.Darken2,
@@ -88,7 +89,7 @@ public record EnvironmentData
 
     private double RoundedHumidity => Math.Round(_humidity, 0);
     public string HumidityString => $"{RoundedHumidity}%";
-    public string HumidityLastMeasurement => LastMeasurementAgo(_humidityTimestamp);
+    public string HumidityLastMeasurement => DateTimeHelpers.GetFriendlyTimeString(_humidityTimestamp);
     public string HumidityStyle => RoundedHumidity switch
     {
         <= 30 => Colors.Red.Darken1,
@@ -101,7 +102,7 @@ public record EnvironmentData
 
     private double RoundedPressure => Math.Round(_pressure, 0);
     public string PressureString => $"{RoundedPressure} hPa";
-    public string PressureLastMeasurement => LastMeasurementAgo(_pressureTimestamp);
+    public string PressureLastMeasurement => DateTimeHelpers.GetFriendlyTimeString(_pressureTimestamp);
     public string PressureStyle => RoundedPressure switch
     {
         <= 980 => Colors.Blue.Darken2,
@@ -113,7 +114,7 @@ public record EnvironmentData
 
     private double RoundedAQI => Math.Round(_aqi, 0);
     public string AQIString => $"{RoundedAQI}";
-    public string AQILastMeasurement => LastMeasurementAgo(_aqiTimestamp);
+    public string AQILastMeasurement => DateTimeHelpers.GetFriendlyTimeString(_aqiTimestamp);
     public string AQIStyle => RoundedAQI switch
     {
         <= 50 => Colors.Green.Darken1,
@@ -123,40 +124,4 @@ public record EnvironmentData
         <= 300 => Colors.Red.Darken2,
         _ => Colors.Red.Darken4
     };
-
-    private string LastMeasurementAgo(DateTimeOffset timestamp)
-    {
-        TimeSpan ago = DateTimeOffset.Now - timestamp;
-        int minutesSince = (int)ago.TotalMinutes;
-        int hoursSince = (int)ago.TotalHours;
-        int daysSince = (int)ago.TotalDays;
-        if (daysSince > 0)
-        {
-            return $"{daysSince} day{(daysSince > 1 ? "s" : "")} ago";
-        }
-        else if (hoursSince > 0)
-        {
-            return $"{hoursSince} hour{(hoursSince > 1 ? "s" : "")} ago";
-        }
-        else if (minutesSince >= 30)
-        {
-            return $"{minutesSince} minute{(minutesSince > 1 ? "s" : "")} ago";
-        }
-        else if (minutesSince >= 2)
-        {
-            return $"{minutesSince} minutes ago";
-        }
-        else if (minutesSince == 1)
-        {
-            return $"{minutesSince} minute ago";
-        }
-        else if (minutesSince < 1)
-        {
-            return "Just now";
-        }
-        else
-        {
-            return "Unknown";
-        }
-    }
 }

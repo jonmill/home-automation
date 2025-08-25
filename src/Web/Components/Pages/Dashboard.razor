@@ -3,6 +3,7 @@
 @page "/"
 @using HomeAutomation.Database
 @using HomeAutomation.Models.Database
+@using HomeAutomation.Models.Enums
 @using HomeAutomation.Web.Services
 @using LinqToDB.Async
 @using MQTTnet.Packets
@@ -15,7 +16,7 @@
     }
     <MudText Typo="Typo.h3" Style="margin: 20px 0px 0px 20px;">Nora's Room</MudText>
     <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
-        <MudItem>
+        <MudItem Style="width: 100px" xs="6" sm="3">
             <MudPaper Style="@($"padding: 12px; background: {NoraRoom.TemperatureStyle}; color: black")">
                 <MudText><strong>Temperature</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -27,7 +28,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem>
+        <MudItem Style="width: 100px" xs="6" sm="3">
             <MudPaper Style="@($"padding: 12px; background: {NoraRoom.HumidityStyle}; color: black")">
                 <MudText><strong>Humidity</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -39,7 +40,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem>
+        <MudItem Style="width: 100px" xs="6" sm="3">
             <MudPaper Style="@($"padding: 12px; background: {NoraRoom.PressureStyle}; color: black")">
                 <MudText><strong>Pressure</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -51,7 +52,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem>
+        <MudItem Style="width: 100px" xs="6" sm="3">
             <MudPaper Style="@($"padding: 12px; background: {NoraRoom.AQIStyle}; color: black")">
                 <MudText><strong>AQI</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -68,7 +69,7 @@
     <MudSpacer />
     <MudText Typo="Typo.h3" Style="margin: 0px 0px 0px 20px;">Outside</MudText>
     <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
-        <MudItem>
+        <MudItem Style="width: 100px" xs="6" sm="3">
             <MudPaper Style="@($"padding: 12px; background: {Outside.TemperatureStyle}; color: black")">
                 <MudText><strong>Temperature</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -80,7 +81,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem>
+        <MudItem Style="width: 100px" xs="6" sm="3">
             <MudPaper Style="@($"padding: 12px; background: {Outside.HumidityStyle}; color: black")">
                 <MudText><strong>Humidity</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -92,7 +93,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem>
+        <MudItem Style="width: 100px" xs="6" sm="3">
             <MudPaper Style="@($"padding: 12px; background: {Outside.PressureStyle}; color: black")">
                 <MudText><strong>Pressure</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -104,7 +105,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem>
+        <MudItem Style="width: 100px" xs="6" sm="3">
             <MudPaper Style="@($"padding: 12px; background: {Outside.AQIStyle}; color: black")">
                 <MudText><strong>AQI</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -121,98 +122,45 @@
     <MudSpacer />
     <MudText Typo="Typo.h3" Style="margin: 0px 0px 0px 20px;">Security</MudText>
     <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
-        <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {FrontDoor.SecurityStyle}; color: black")">
-                <MudText><strong>Front Door</strong></MudText>
-                <MudText Typo="Typo.body2">
-                    @FrontDoor.SecurityText
-                </MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {LivingRoom1.SecurityStyle}; color: black")">
-                <MudText><strong>Living Room 1</strong></MudText>
-                <MudText Typo="Typo.body2">
-                    @LivingRoom1.SecurityText
-                </MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {LivingRoom2.SecurityStyle}; color: black")">
-                <MudText><strong>Living Room 2</strong></MudText>
-                <MudText Typo="Typo.body2">
-                    @LivingRoom2.SecurityText
-                </MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {DiningRoom.SecurityStyle}; color: black")">
-                <MudText><strong>Dining Room</strong></MudText>
-                <MudText Typo="Typo.body2">
-                    @DiningRoom.SecurityText
-                </MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {TVRoom.SecurityStyle}; color: black")">
-                <MudText><strong>TV Room</strong></MudText>
-                <MudText Typo="Typo.body2">
-                    @TVRoom.SecurityText
-                </MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {GarageDoor.SecurityStyle}; color: black")">
-                <MudText><strong>Garage Door</strong></MudText>
-                <MudText Typo="Typo.body2">
-                    @GarageDoor.SecurityText
-                </MudText>
-            </MudPaper>
-        </MudItem>
+        @foreach (SecurityData sensor in SecuritySensors)
+        {
+            <MudItem Style="width: 100px" xs="6" sm="3">
+                <MudPaper Style="@($"padding: 12px; background: {sensor.SecurityStyle}; color: black")">
+                    <MudText><strong>@sensor.SensorName</strong></MudText>
+                    <MudText Typo="Typo.body2">
+                        @sensor.SecurityText
+                    </MudText>
+                    <MudSpacer />
+                    <MudText Typo="Typo.subtitle2" Style="margin-top: 10px;">
+                        @sensor.LastMeasured
+                    </MudText>
+                </MudPaper>
+            </MudItem>
+        }
     </MudGrid>
 
     <MudSpacer />
     <MudText Typo="Typo.h3" Style="margin: 0px 0px 0px 20px;">System Status</MudText>
     <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
-        <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {WeatherStationHeartbeat.HeartbeatStyle}; color: black")">
-                <MudText><strong>Weather Station</strong></MudText>
-                <MudText Typo="Typo.body2">
-                    @WeatherStationHeartbeat.HeartbeatText
-                </MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {NoraRoomHeartbeat.HeartbeatStyle}; color: black")">
-                <MudText><strong>Nora Room</strong></MudText>
-                <MudText Typo="Typo.body2">
-                    @NoraRoomHeartbeat.HeartbeatText
-                </MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem>
-            <MudPaper Style="@($"padding: 12px; background: {SecuritySystemHeartbeat.HeartbeatStyle}; color: black")">
-                <MudText><strong>Security System</strong></MudText>
-                <MudText Typo="Typo.body2">
-                    @SecuritySystemHeartbeat.HeartbeatText
-                </MudText>
-            </MudPaper>
-        </MudItem>
+        @foreach (HeartbeatData hb in Heartbeats)
+        {
+            <MudItem Style="width: 100px" xs="6" sm="3">
+                <MudPaper Style="@($"padding: 12px; background: {hb.HeartbeatStyle}; color: black")">
+                    <MudText><strong>@hb.SystemName</strong></MudText>
+                    <MudText Typo="Typo.body2">
+                        @hb.HeartbeatText
+                    </MudText>
+                </MudPaper>
+            </MudItem>
+        }
     </MudGrid>
 </MudStack>
 
 @code {
     private EnvironmentData Outside = new();
     private EnvironmentData NoraRoom = new();
-    private SecurityData FrontDoor = new(null);
-    private SecurityData LivingRoom1 = new(null);
-    private SecurityData LivingRoom2 = new(null);
-    private SecurityData DiningRoom = new(null);
-    private SecurityData TVRoom = new(null);
-    private SecurityData GarageDoor = new(null);
-    private HeartbeatData WeatherStationHeartbeat = new();
-    private HeartbeatData NoraRoomHeartbeat = new();
-    private HeartbeatData SecuritySystemHeartbeat = new();
+    private List<SecurityData> SecuritySensors = [];
+    private List<HeartbeatData> Heartbeats = [];
 
     [Inject]
     private IServiceScopeFactory ServiceScopeFactory { get; set; } = null!;
@@ -279,27 +227,44 @@
 
     private async Task RefreshSecurityDataAsync(HomeAutomationDb dbContext)
     {
-        SensorValue? frontDoor = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "1").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? garageDoor = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "2").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? diningRoom = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "3").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? livingRoom1 = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "4").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? livingRoom2 = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "5").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? tvRoom = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "6").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        FrontDoor = new SecurityData(frontDoor);
-        LivingRoom1 = new SecurityData(livingRoom1);
-        LivingRoom2 = new SecurityData(livingRoom2);
-        DiningRoom = new SecurityData(diningRoom);
-        TVRoom = new SecurityData(tvRoom);
-        GarageDoor = new SecurityData(garageDoor);
+        var query =
+        from s in dbContext.Sensors
+        where s.Type == SensorTypes.Contact && !s.IsDeleted
+        join sv in dbContext.SensorValues
+        on new { BoardSerial = s.BoardSerialNumber, SensorSerial = s.SerialNumber }
+        equals new { BoardSerial = sv.BoardSerialNumber, SensorSerial = sv.SensorSerialNumber }
+        join latest in
+        (
+        from sv in dbContext.SensorValues
+        group sv by new { sv.BoardSerialNumber, sv.SensorSerialNumber } into g
+        select new
+        {
+            g.Key.BoardSerialNumber,
+            g.Key.SensorSerialNumber,
+            LatestTimestamp = g.Max(x => x.Timestamp)
+        }
+        )
+        on new { sv.BoardSerialNumber, sv.SensorSerialNumber, sv.Timestamp }
+        equals new { latest.BoardSerialNumber, latest.SensorSerialNumber, Timestamp = latest.LatestTimestamp }
+        orderby s.Name ascending
+        select new SecurityData(sv, s);
+
+        SecuritySensors = await query.ToListAsync();
     }
 
     private async Task RefreshHeartbeatDataAsync(HomeAutomationDb dbContext)
     {
-        Heartbeat? weatherHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber == "4").OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
-        Heartbeat? noraRoomHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber == "6").OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
-        Heartbeat? securityHeartbeat = await dbContext.Heartbeats.Where(hb => hb.BoardSerialNumber == "1").OrderByDescending(hb => hb.Timestamp).FirstOrDefaultAsync();
-        WeatherStationHeartbeat = new HeartbeatData(weatherHeartbeat);
-        NoraRoomHeartbeat = new HeartbeatData(noraRoomHeartbeat);
-        SecuritySystemHeartbeat = new HeartbeatData(securityHeartbeat);
+        Heartbeats.Clear();
+
+        List<Board> boards = await dbContext.Boards.Where(b => !b.IsDeleted).OrderBy(b => b.Name).ToListAsync();
+        foreach (Board board in boards)
+        {
+            Heartbeat? hb = await dbContext.Heartbeats.Where(h => h.BoardSerialNumber == board.SerialNumber).OrderByDescending(h => h.Timestamp).FirstOrDefaultAsync();
+            if (hb is not null)
+            {
+                hb.Board = board;
+                Heartbeats.Add(new HeartbeatData(hb));
+            }
+        }
     }
 }
