@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.8.0"></a>
+## [1.8.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.8.0) (2025-08-24)
+
+### Features
+
+* Adding battery info persistence ([1f5219e](https://www.github.com/jonmill/home-automation/commit/1f5219edd09a4e7c8e88a8c4862a55397f77e1f4))
+
+### Bug Fixes
+
+* Fixing CSS for box sizes ([2dd8a25](https://www.github.com/jonmill/home-automation/commit/2dd8a254eab2835aeca8368122da1c44c5300f6c))
+
 <a name="1.7.0"></a>
 ## [1.7.0](https://www.github.com/jonmill/home-automation/releases/tag/v1.7.0) (2025-08-24)
 
