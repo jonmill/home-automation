@@ -9,14 +9,14 @@
 @using MQTTnet.Packets
 
 <PageTitle>Dashboard</PageTitle>
-<MudStack>
+<MudStack Style="margin: 20px">
     @if (_isRefreshing)
     {
         <MudProgressCircular Indeterminate Color="Color.Primary" Size="Size.Large" />
     }
-    <MudText Typo="Typo.h3" Style="margin: 20px 0px 0px 20px;">Nora's Room</MudText>
-    <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
-        <MudItem Style="width: 100px" xs="6" sm="3">
+    <MudText Typo="Typo.h3">Nora's Room</MudText>
+    <MudGrid Spacing="10" Justify="Justify.FlexStart">
+        <MudItem xs="12" sm="12" md="2" lg="2">
             <MudPaper Style="@($"padding: 12px; background: {NoraRoom.TemperatureStyle}; color: black")">
                 <MudText><strong>Temperature</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -28,7 +28,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem Style="width: 100px" xs="6" sm="3">
+        <MudItem xs="12" sm="12" md="2" lg="2">
             <MudPaper Style="@($"padding: 12px; background: {NoraRoom.HumidityStyle}; color: black")">
                 <MudText><strong>Humidity</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -40,7 +40,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem Style="width: 100px" xs="6" sm="3">
+        <MudItem xs="12" sm="12" md="2" lg="2">
             <MudPaper Style="@($"padding: 12px; background: {NoraRoom.PressureStyle}; color: black")">
                 <MudText><strong>Pressure</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -52,7 +52,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem Style="width: 100px" xs="6" sm="3">
+        <MudItem xs="12" sm="12" md="2" lg="2">
             <MudPaper Style="@($"padding: 12px; background: {NoraRoom.AQIStyle}; color: black")">
                 <MudText><strong>AQI</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -65,11 +65,10 @@
             </MudPaper>
         </MudItem>
     </MudGrid>
-
-    <MudSpacer />
-    <MudText Typo="Typo.h3" Style="margin: 0px 0px 0px 20px;">Outside</MudText>
-    <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
-        <MudItem Style="width: 100px" xs="6" sm="3">
+    <MudDivider Style="margin: 30px 0px 20px 0px;" />
+    <MudText Typo="Typo.h3">Outside</MudText>
+    <MudGrid Spacing="10" Justify="Justify.FlexStart">
+        <MudItem xs="12" sm="12" md="2" lg="2">
             <MudPaper Style="@($"padding: 12px; background: {Outside.TemperatureStyle}; color: black")">
                 <MudText><strong>Temperature</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -81,7 +80,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem Style="width: 100px" xs="6" sm="3">
+        <MudItem xs="12" sm="12" md="2" lg="2">
             <MudPaper Style="@($"padding: 12px; background: {Outside.HumidityStyle}; color: black")">
                 <MudText><strong>Humidity</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -93,7 +92,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem Style="width: 100px" xs="6" sm="3">
+        <MudItem xs="12" sm="12" md="2" lg="2">
             <MudPaper Style="@($"padding: 12px; background: {Outside.PressureStyle}; color: black")">
                 <MudText><strong>Pressure</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -105,7 +104,7 @@
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem Style="width: 100px" xs="6" sm="3">
+        <MudItem xs="12" sm="12" md="2" lg="2">
             <MudPaper Style="@($"padding: 12px; background: {Outside.AQIStyle}; color: black")">
                 <MudText><strong>AQI</strong></MudText>
                 <MudText Typo="Typo.body2">
@@ -118,13 +117,12 @@
             </MudPaper>
         </MudItem>
     </MudGrid>
-
-    <MudSpacer />
-    <MudText Typo="Typo.h3" Style="margin: 0px 0px 0px 20px;">Security</MudText>
-    <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
+    <MudDivider Style="margin: 30px 0px 20px 0px;" />
+    <MudText Typo="Typo.h3">Security</MudText>
+    <MudGrid Spacing="10" Justify="Justify.FlexStart">
         @foreach (SecurityData sensor in SecuritySensors)
         {
-            <MudItem Style="width: 100px" xs="6" sm="3">
+            <MudItem xs="12" sm="12" md="6" lg="6">
                 <MudPaper Style="@($"padding: 12px; background: {sensor.SecurityStyle}; color: black")">
                     <MudText><strong>@sensor.SensorName</strong></MudText>
                     <MudText Typo="Typo.body2">
@@ -138,13 +136,12 @@
             </MudItem>
         }
     </MudGrid>
-
-    <MudSpacer />
-    <MudText Typo="Typo.h3" Style="margin: 0px 0px 0px 20px;">System Status</MudText>
-    <MudGrid Style="margin-left: 20px" Spacing="10" Justify="Justify.FlexStart">
+    <MudDivider Style="margin: 30px 0px 20px 0px;" />
+    <MudText Typo="Typo.h3">System Status</MudText>
+    <MudGrid Spacing="10" Justify="Justify.FlexStart">
         @foreach (HeartbeatData hb in Heartbeats)
         {
-            <MudItem Style="width: 100px" xs="6" sm="3">
+            <MudItem xs="12" sm="12" md="6" lg="6">
                 <MudPaper Style="@($"padding: 12px; background: {hb.HeartbeatStyle}; color: black")">
                     <MudText><strong>@hb.SystemName</strong></MudText>
                     <MudText Typo="Typo.body2">

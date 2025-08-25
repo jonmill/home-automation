@@ -36,7 +36,7 @@ public record EnvironmentData
         }
         else
         {
-            _temperature = double.MaxValue;
+            _temperature = 0.0;
             _tempTimestamp = DateTimeOffset.MinValue;
         }
 
@@ -47,7 +47,7 @@ public record EnvironmentData
         }
         else
         {
-            _humidity = double.MaxValue;
+            _humidity = 0.0;
             _humidityTimestamp = DateTimeOffset.MinValue;
         }
 
@@ -58,7 +58,7 @@ public record EnvironmentData
         }
         else
         {
-            _pressure = double.MaxValue;
+            _pressure = 0.0;
             _pressureTimestamp = DateTimeOffset.MinValue;
         }
 
@@ -69,7 +69,7 @@ public record EnvironmentData
         }
         else
         {
-            _aqi = double.MaxValue;
+            _aqi = 0.0;
             _aqiTimestamp = DateTimeOffset.MinValue;
         }
     }
