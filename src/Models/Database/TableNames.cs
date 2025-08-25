@@ -11,6 +11,11 @@ internal static class TableNames
     public const string Boards = "Boards";
 
     /// <summary>
+    /// The name of the table that stores battery information for IoT boards.
+    /// </summary>
+    public const string BoardBatteryInfo = "BoardBatteryInfos";
+
+    /// <summary>
     /// The name of the table that stores information about sensors.
     /// </summary>
     public const string Sensors = "Sensors";

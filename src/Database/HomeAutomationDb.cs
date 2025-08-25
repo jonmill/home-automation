@@ -18,6 +18,11 @@ public sealed class HomeAutomationDb(DataOptions<HomeAutomationDb> options) : Da
     public ITable<Board> Boards => this.GetTable<Board>();
 
     /// <summary>
+    /// Gets the table for board battery information.
+    /// </summary>
+    public ITable<BoardBatteryInfo> BoardBatteryInfos => this.GetTable<BoardBatteryInfo>();
+
+    /// <summary>
     /// Gets the table for heartbeat entries.
     /// </summary>
     public ITable<Heartbeat> Heartbeats => this.GetTable<Heartbeat>();

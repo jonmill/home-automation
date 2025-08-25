@@ -147,6 +147,13 @@
                     <MudText Typo="Typo.body2">
                         @hb.HeartbeatText
                     </MudText>
+                    @if (hb.HasBattery)
+                    {
+                        <MudDivider />
+                        <MudText Typo="Typo.body2">
+                            Battery Level: @hb.BatteryText
+                        </MudText>
+                    }
                 </MudPaper>
             </MudItem>
         }
@@ -256,12 +263,9 @@
         List<Board> boards = await dbContext.Boards.Where(b => !b.IsDeleted).OrderBy(b => b.Name).ToListAsync();
         foreach (Board board in boards)
         {
+            BoardBatteryInfo? boardBatteryInfo = await dbContext.BoardBatteryInfos.Where(b => b.BoardId == board.Id).OrderByDescending(b => b.LastUpdated).FirstOrDefaultAsync();
             Heartbeat? hb = await dbContext.Heartbeats.Where(h => h.BoardSerialNumber == board.SerialNumber).OrderByDescending(h => h.Timestamp).FirstOrDefaultAsync();
-            if (hb is not null)
-            {
-                hb.Board = board;
-                Heartbeats.Add(new HeartbeatData(hb));
-            }
+            Heartbeats.Add(new HeartbeatData(board, hb, boardBatteryInfo));
         }
     }
 }

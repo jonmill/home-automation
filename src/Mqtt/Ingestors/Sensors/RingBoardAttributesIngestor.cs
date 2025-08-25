@@ -62,7 +62,7 @@ internal sealed class RingBoardAttributesIngestor : IngestBase
 
         try
         {
-            _logger.LogInformation("Inserting heartbeat for Ring Board {SerialNumber}", serialNumber);
+            _logger.LogInformation("Inserting heartbeat & battery info for Ring Board {SerialNumber}", serialNumber);
             using IServiceScope scope = _serviceScopeFactory.CreateScope();
             using HomeAutomationDb db = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
             await db.InsertAsync<Heartbeat>(new Heartbeat()
@@ -71,11 +71,17 @@ internal sealed class RingBoardAttributesIngestor : IngestBase
                 NextExpectedHeartbeat = boardState.LastUpdate.AddHours(6), // Ring comms every 4-6 hours
                 Timestamp = boardState.LastUpdate,
             });
-            _logger.LogInformation("Successfully inserted heartbeat for Ring Board {SerialNumber}", serialNumber);
+            await db.InsertAsync<BoardBatteryInfo>(new BoardBatteryInfo()
+            {
+                BoardId = board.Id,
+                BatteryLevel = boardState.BatteryLevel,
+                LastUpdated = boardState.LastUpdate 
+            });
+            _logger.LogInformation("Successfully inserted heartbeat & battery info for Ring Board {SerialNumber}", serialNumber);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to insert heartbeat for Ring Board {SerialNumber}", serialNumber);
+            _logger.LogError(ex, "Failed to insert heartbeat & battery info for Ring Board {SerialNumber}", serialNumber);
             return;
         }
     }
