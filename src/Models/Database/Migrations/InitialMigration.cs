@@ -3,7 +3,7 @@ using HomeAutomation.Models.Enums;
 
 namespace HomeAutomation.Models.Database.Migrations;
 
-[MigrationVersion(2025, 08, 09, true, 1)]
+[MigrationVersion(2025, 08, 26, true, 1)]
 public sealed class InitialMigration : Migration
 {
     public override void Up()
@@ -79,6 +79,21 @@ public sealed class InitialMigration : Migration
         Create.Index("idx_logentries_board_serialnumber")
             .OnTable(TableNames.LogEntries)
             .OnColumn("BoardSerialNumber").Ascending();
+        Create.Table(TableNames.PushSubscriptions)
+            .WithColumn("Endpoint").AsString().PrimaryKey().NotNullable()
+            .WithColumn("P256dh").AsString().NotNullable()
+            .WithColumn("Auth").AsString().NotNullable();
+        Create.Index("IX_PushSubscriptions_Endpoint")
+            .OnTable(TableNames.PushSubscriptions)
+            .OnColumn("Endpoint").Ascending()
+            .WithOptions().Unique();
+        Create.Table(TableNames.BoardBatteryInfo)
+            .WithColumn("BoardId").AsInt32().ForeignKey(TableNames.Boards, "Id").NotNullable()
+            .WithColumn("BatteryLevel").AsDouble().NotNullable()
+            .WithColumn("LastUpdated").AsDateTimeOffset().NotNullable();
+        Create.Index("IX_BoardBatteryInfo_BoardId")
+            .OnTable(TableNames.BoardBatteryInfo)
+            .OnColumn("BoardId").Ascending();
 
         Insert.IntoTable(TableNames.Boards)
             .Row(new { SerialNumber = "1", Name = "Home Security", OnBattery = false, AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
@@ -109,10 +124,197 @@ public sealed class InitialMigration : Migration
             .Row(new { SerialNumber = "18", Name = "Front House Environment Humidity", Type = (byte)SensorTypes.Humidity, Unit = (byte)UnitsOfMeasure.Percentage, BoardSerialNumber = "4", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
             .Row(new { SerialNumber = "19", Name = "Front House Environment Pressure", Type = (byte)SensorTypes.Pressure, Unit = (byte)UnitsOfMeasure.Pascal, BoardSerialNumber = "4", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
             .Row(new { SerialNumber = "20", Name = "Garage Air Temperature", Type = (byte)SensorTypes.Temperature, Unit = (byte)UnitsOfMeasure.Celsius, BoardSerialNumber = "4", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false });
+
+        Insert.IntoTable(TableNames.Boards)
+            .Row(new
+            {
+                SerialNumber = "ae698f45-bb4b-478d-9a6b-438f334b596b",
+                Name = "Kimyen Office Window",
+                AddedAt = DateTimeOffset.UtcNow,
+                OnBattery = true,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "d13f7da9-ead4-4d8d-9812-ae57b98e5491",
+                Name = "Jon Office Window",
+                AddedAt = DateTimeOffset.UtcNow,
+                OnBattery = true,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "e65784ff-c274-4ccf-ae86-348fa1bad9a3",
+                Name = "House Garage Door",
+                AddedAt = DateTimeOffset.UtcNow,
+                OnBattery = true,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "cd4ed731-1f88-4f2a-9ae8-5c4fe90fd71d",
+                Name = "TV Room Chimney Window",
+                AddedAt = DateTimeOffset.UtcNow,
+                OnBattery = true,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "a3ba703d-2e22-4b32-ae15-ef3d12ea9014",
+                Name = "TV Room Interior Window",
+                AddedAt = DateTimeOffset.UtcNow,
+                OnBattery = true,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "1e4e05b8-eb43-4877-8a8c-7ed87cbf74b7",
+                Name = "Downstairs Bathroom Window",
+                AddedAt = DateTimeOffset.UtcNow,
+                OnBattery = true,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "d54ccc81-3601-4b7b-b2ca-191687f70237",
+                Name = "Garage Window",
+                AddedAt = DateTimeOffset.UtcNow,
+                OnBattery = true,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "b50ca877-31fa-4fe6-9026-e250e17558e5",
+                Name = "Kitchen Window",
+                AddedAt = DateTimeOffset.UtcNow,
+                OnBattery = true,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "01c72dde-2213-48dc-b548-c2b0ed215dff",
+                Name = "Nora Bedroom Window",
+                AddedAt = DateTimeOffset.UtcNow,
+                OnBattery = true,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "2b07e27c-9481-4915-b6c0-5bee2aab6f3d",
+                Name = "Guest Bedroom Window",
+                AddedAt = DateTimeOffset.UtcNow,
+                OnBattery = true,
+                IsDeleted = false,
+            });
+        Insert.IntoTable(TableNames.Sensors)
+            .Row(new
+            {
+                SerialNumber = "ae698f45-bb4b-478d-9a6b-438f334b596b",
+                Name = "Kimyen Office Window",
+                Type = (byte)SensorTypes.Contact,
+                Unit = (byte)UnitsOfMeasure.Boolean,
+                BoardSerialNumber = "ae698f45-bb4b-478d-9a6b-438f334b596b",
+                AddedAt = DateTimeOffset.UtcNow,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "d13f7da9-ead4-4d8d-9812-ae57b98e5491",
+                Name = "Jon Office Window",
+                Type = (byte)SensorTypes.Contact,
+                Unit = (byte)UnitsOfMeasure.Boolean,
+                BoardSerialNumber = "d13f7da9-ead4-4d8d-9812-ae57b98e5491",
+                AddedAt = DateTimeOffset.UtcNow,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "e65784ff-c274-4ccf-ae86-348fa1bad9a3",
+                Name = "House Garage Door",
+                Type = (byte)SensorTypes.Contact,
+                Unit = (byte)UnitsOfMeasure.Boolean,
+                BoardSerialNumber = "e65784ff-c274-4ccf-ae86-348fa1bad9a3",
+                AddedAt = DateTimeOffset.UtcNow,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "cd4ed731-1f88-4f2a-9ae8-5c4fe90fd71d",
+                Name = "TV Room Chimney Window",
+                Type = (byte)SensorTypes.Contact,
+                Unit = (byte)UnitsOfMeasure.Boolean,
+                BoardSerialNumber = "cd4ed731-1f88-4f2a-9ae8-5c4fe90fd71d",
+                AddedAt = DateTimeOffset.UtcNow,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "a3ba703d-2e22-4b32-ae15-ef3d12ea9014",
+                Name = "TV Room Interior Window",
+                Type = (byte)SensorTypes.Contact,
+                Unit = (byte)UnitsOfMeasure.Boolean,
+                BoardSerialNumber = "a3ba703d-2e22-4b32-ae15-ef3d12ea9014",
+                AddedAt = DateTimeOffset.UtcNow,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "1e4e05b8-eb43-4877-8a8c-7ed87cbf74b7",
+                Name = "Downstairs Bathroom Window",
+                Type = (byte)SensorTypes.Contact,
+                Unit = (byte)UnitsOfMeasure.Boolean,
+                BoardSerialNumber = "1e4e05b8-eb43-4877-8a8c-7ed87cbf74b7",
+                AddedAt = DateTimeOffset.UtcNow,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "d54ccc81-3601-4b7b-b2ca-191687f70237",
+                Name = "Garage Window",
+                Type = (byte)SensorTypes.Contact,
+                Unit = (byte)UnitsOfMeasure.Boolean,
+                BoardSerialNumber = "d54ccc81-3601-4b7b-b2ca-191687f70237",
+                AddedAt = DateTimeOffset.UtcNow,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "b50ca877-31fa-4fe6-9026-e250e17558e5",
+                Name = "Kitchen Window",
+                Type = (byte)SensorTypes.Contact,
+                Unit = (byte)UnitsOfMeasure.Boolean,
+                BoardSerialNumber = "b50ca877-31fa-4fe6-9026-e250e17558e5",
+                AddedAt = DateTimeOffset.UtcNow,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "01c72dde-2213-48dc-b548-c2b0ed215dff",
+                Name = "Nora Bedroom Window",
+                Type = (byte)SensorTypes.Contact,
+                Unit = (byte)UnitsOfMeasure.Boolean,
+                BoardSerialNumber = "01c72dde-2213-48dc-b548-c2b0ed215dff",
+                AddedAt = DateTimeOffset.UtcNow,
+                IsDeleted = false,
+            })
+            .Row(new
+            {
+                SerialNumber = "2b07e27c-9481-4915-b6c0-5bee2aab6f3d",
+                Name = "Guest Bedroom Window",
+                Type = (byte)SensorTypes.Contact,
+                Unit = (byte)UnitsOfMeasure.Boolean,
+                BoardSerialNumber = "2b07e27c-9481-4915-b6c0-5bee2aab6f3d",
+                AddedAt = DateTimeOffset.UtcNow,
+                IsDeleted = false,
+            });
     }
 
     public override void Down()
     {
+        Delete.Index("IX_BoardBatteryInfo_BoardId").OnTable(TableNames.BoardBatteryInfo);
+        Delete.Table(TableNames.BoardBatteryInfo);
+        Delete.Index("IX_PushSubscriptions_Endpoint").OnTable(TableNames.PushSubscriptions);
+        Delete.Table(TableNames.PushSubscriptions);
         Delete.Index("idx_logentries_board_id").OnTable(TableNames.LogEntries);
         Delete.Index("idx_logentries_board_timestamp").OnTable(TableNames.LogEntries);
         Delete.ForeignKey("fk_logentries_boards").OnTable(TableNames.LogEntries);

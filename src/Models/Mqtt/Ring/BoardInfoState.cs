@@ -11,13 +11,13 @@ public sealed class BoardInfoState
     /// The battery level of the device (0-100).
     /// </summary>
     [JsonPropertyName("batteryLevel")]
-    public required int BatteryLevel { get; init; }
+    public int BatteryLevel { get; init; }
 
     /// <summary>
     /// The battery status of the device.
     /// </summary>
     [JsonPropertyName("batteryStatus")]
-    public required string BatteryStatus { get; init; }
+    public string BatteryStatus { get; init; } = string.Empty;
 
     /// <summary>
     /// The communication status of the device.
