@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.0.0"></a>
+## [2.0.0](https://www.github.com/jonmill/home-automation/releases/tag/v2.0.0) (2025-08-26)
+
+### Features
+
+* Fixing incorrect database unique constraint and consolidating migrations ([377aecd](https://www.github.com/jonmill/home-automation/commit/377aecd202cb8be51844f8451478a52bafe8effb))
+
+### Breaking Changes
+
+* Fixing incorrect database unique constraint and consolidating migrations ([377aecd](https://www.github.com/jonmill/home-automation/commit/377aecd202cb8be51844f8451478a52bafe8effb))
+
 <a name="1.8.1"></a>
 ## [1.8.1](https://www.github.com/jonmill/home-automation/releases/tag/v1.8.1) (2025-08-24)
 
