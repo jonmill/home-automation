@@ -231,29 +231,19 @@
 
     private async Task RefreshSecurityDataAsync(HomeAutomationDb dbContext)
     {
-        var query =
-        from s in dbContext.Sensors
-        where s.Type == SensorTypes.Contact && !s.IsDeleted
-        join sv in dbContext.SensorValues
-        on new { BoardSerial = s.BoardSerialNumber, SensorSerial = s.SerialNumber }
-        equals new { BoardSerial = sv.BoardSerialNumber, SensorSerial = sv.SensorSerialNumber }
-        join latest in
-        (
-        from sv in dbContext.SensorValues
-        group sv by new { sv.BoardSerialNumber, sv.SensorSerialNumber } into g
-        select new
-        {
-            g.Key.BoardSerialNumber,
-            g.Key.SensorSerialNumber,
-            LatestTimestamp = g.Max(x => x.Timestamp)
-        }
-        )
-        on new { sv.BoardSerialNumber, sv.SensorSerialNumber, sv.Timestamp }
-        equals new { latest.BoardSerialNumber, latest.SensorSerialNumber, Timestamp = latest.LatestTimestamp }
-        orderby s.Name ascending
-        select new SecurityData(sv, s);
+        SecuritySensors.Clear();
 
-        SecuritySensors = await query.ToListAsync();
+        List<Sensor> sensors = await dbContext.Sensors.Where(s => (s.Type == SensorTypes.Contact) && (s.IsDeleted == false))
+                                                      .OrderBy(s => s.Name)
+                                                      .ToListAsync();
+        foreach (Sensor sensor in sensors)
+        {
+            SensorValue? latestValue = await dbContext.SensorValues
+                .Where(sv => sv.SensorSerialNumber == sensor.SerialNumber)
+                .OrderByDescending(sv => sv.Timestamp)
+                .FirstOrDefaultAsync();
+            SecuritySensors.Add(new SecurityData(latestValue, sensor));
+        }
     }
 
     private async Task RefreshHeartbeatDataAsync(HomeAutomationDb dbContext)

@@ -144,14 +144,6 @@ public sealed class InitialMigration : Migration
             })
             .Row(new
             {
-                SerialNumber = "e65784ff-c274-4ccf-ae86-348fa1bad9a3",
-                Name = "House Garage Door",
-                AddedAt = DateTimeOffset.UtcNow,
-                OnBattery = true,
-                IsDeleted = false,
-            })
-            .Row(new
-            {
                 SerialNumber = "cd4ed731-1f88-4f2a-9ae8-5c4fe90fd71d",
                 Name = "TV Room Chimney Window",
                 AddedAt = DateTimeOffset.UtcNow,
@@ -224,16 +216,6 @@ public sealed class InitialMigration : Migration
                 Type = (byte)SensorTypes.Contact,
                 Unit = (byte)UnitsOfMeasure.Boolean,
                 BoardSerialNumber = "d13f7da9-ead4-4d8d-9812-ae57b98e5491",
-                AddedAt = DateTimeOffset.UtcNow,
-                IsDeleted = false,
-            })
-            .Row(new
-            {
-                SerialNumber = "e65784ff-c274-4ccf-ae86-348fa1bad9a3",
-                Name = "House Garage Door",
-                Type = (byte)SensorTypes.Contact,
-                Unit = (byte)UnitsOfMeasure.Boolean,
-                BoardSerialNumber = "e65784ff-c274-4ccf-ae86-348fa1bad9a3",
                 AddedAt = DateTimeOffset.UtcNow,
                 IsDeleted = false,
             })
