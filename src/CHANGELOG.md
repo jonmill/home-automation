@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.0.1"></a>
+## [2.0.1](https://www.github.com/jonmill/home-automation/releases/tag/v2.0.1) (2025-08-26)
+
+### Bug Fixes
+
+* Fixing sensor query to show unknowns ([ae97da2](https://www.github.com/jonmill/home-automation/commit/ae97da2b2351bf18bbe01552448442b0e8b79eb1))
+
 <a name="2.0.0"></a>
 ## [2.0.0](https://www.github.com/jonmill/home-automation/releases/tag/v2.0.0) (2025-08-26)
 
