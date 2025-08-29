@@ -50,7 +50,7 @@ internal sealed class RingBoardAttributesIngestor : IngestBase
             return;
         }
 
-        string serialNumber = string.IsNullOrEmpty(boardState.SerialNumber) ? parts[3] : boardState.SerialNumber;
+        string serialNumber = parts[3]; // Use the ID in the topic; ideally we would have used the serial number field but that isn't consistent
         Board? board = await _databaseCache.GetBoardAsync(serialNumber);
         if (board is null)
         {
