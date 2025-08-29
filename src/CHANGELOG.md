@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.0.2"></a>
+## [2.0.2](https://www.github.com/jonmill/home-automation/releases/tag/v2.0.2) (2025-08-28)
+
+### Bug Fixes
+
+* Fixing Ring Serial Number lookup ([609be96](https://www.github.com/jonmill/home-automation/commit/609be9655f90474998395c1be44c97331109bc9d))
+
 <a name="2.0.1"></a>
 ## [2.0.1](https://www.github.com/jonmill/home-automation/releases/tag/v2.0.1) (2025-08-26)
 
