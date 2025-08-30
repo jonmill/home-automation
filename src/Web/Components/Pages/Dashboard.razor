@@ -181,7 +181,10 @@
     protected override async Task OnInitializedAsync()
     {
         await RefreshDataAsync();
-        UserSession.OnDataUpdated += RefreshDataAsync;
+        if (UserSession is not null)
+        {
+            UserSession.OnDataUpdated += RefreshDataAsync;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
