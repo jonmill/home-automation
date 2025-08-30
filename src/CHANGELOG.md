@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.1.0"></a>
+## [2.1.0](https://www.github.com/jonmill/home-automation/releases/tag/v2.1.0) (2025-08-30)
+
+### Features
+
+* Adding push notifications ([18fef99](https://www.github.com/jonmill/home-automation/commit/18fef99bc199d0a5aeab5a188fd8b66f741f6d6c))
+* Adding service-to-service notifications for new data ([83b1b94](https://www.github.com/jonmill/home-automation/commit/83b1b94d1d16ac429778028a3daf7c58933ade2b))
+
+### Bug Fixes
+
+* Fixing build warning ([195717b](https://www.github.com/jonmill/home-automation/commit/195717bd0882ee87b4254d23683ac8d721ebfff1))
+
 <a name="2.0.2"></a>
 ## [2.0.2](https://www.github.com/jonmill/home-automation/releases/tag/v2.0.2) (2025-08-28)
 
