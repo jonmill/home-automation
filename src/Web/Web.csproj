@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>HomeAutomation.Web</AssemblyName>
+    <LangVersion>preview</LangVersion>
     <UserSecretsId>46805548-c954-4b14-8f0d-e09e263614f7</UserSecretsId>
     <Version>2.0.2</Version>
     <ContainerRepository>jonmill/home-automation/web</ContainerRepository>
@@ -13,6 +14,8 @@
 
   <ItemGroup>
     <ProjectReference Include="../Database/Database.csproj" />
+    <ProjectReference Include="../Models/Models.csproj" />
+    <ProjectReference Include="../MqttExtensions/MqttExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

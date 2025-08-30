@@ -1,6 +1,6 @@
 using HomeAutomation.Database;
 using HomeAutomation.Models.Database;
-using HomeAutomation.Mqtt.Services;
+using HomeAutomation.Models.Mqtt.Ingest;
 using LinqToDB;
 using MQTTnet;
 using System.Text.Json;
@@ -67,6 +67,7 @@ internal sealed class SensorDataIngestor : IngestBase
                 Value = sensorData.SensorValue,
                 SensorSerialNumber = sensorData.SensorId,
             });
+            await SendNewDataMessageAsync(Models.Mqtt.NewDataEventTypes.SensorData);
             _logger.LogInformation("Successfully inserted sensor data for board {BoardId} at {Timestamp}.", sensorData.BoardId, sensorData.Timestamp);
         }
         catch (Exception ex)

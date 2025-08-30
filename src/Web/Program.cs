@@ -1,4 +1,5 @@
 using HomeAutomation.Database;
+using HomeAutomation.MqttExtensions;
 using HomeAutomation.Web.Components;
 using HomeAutomation.Web.Dtos;
 using HomeAutomation.Web.Services;
@@ -15,6 +16,17 @@ builder.Configuration.AddUserSecrets(typeof(Program).Assembly, optional: true)
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Add MQTT services
+builder.Services.AddMqttIngestion(builder.Configuration);
+
+// Add notifications
+builder.Services.AddSingleton<UserSessionsRepository>();
+builder.Services.AddScoped<UserSession>(sp =>
+{
+    UserSessionsRepository repository = sp.GetRequiredService<UserSessionsRepository>();
+    return repository.CreateSession();
+});
 
 builder.Services.AddMudServices();
 builder.Services.AddSingleton<ThemeService>();

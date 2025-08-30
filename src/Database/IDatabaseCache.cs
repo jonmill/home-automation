@@ -1,6 +1,6 @@
 using HomeAutomation.Models.Database;
 
-namespace HomeAutomation.Mqtt.Services;
+namespace HomeAutomation.Database;
 
 /// <summary>
 /// Interface for caching database entities.

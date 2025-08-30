@@ -1,9 +1,9 @@
-using HomeAutomation.Database;
 using HomeAutomation.Models.Database;
 using LinqToDB.Async;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
 
-namespace HomeAutomation.Mqtt.Services;
+namespace HomeAutomation.Database;
 
 /// <summary>
 /// Caches database entities in memory for faster access.

@@ -1,6 +1,6 @@
 using HomeAutomation.Database;
 using HomeAutomation.Models.Database;
-using HomeAutomation.Mqtt.Services;
+using HomeAutomation.Models.Mqtt.Ingest;
 using LinqToDB;
 using MQTTnet;
 
@@ -53,6 +53,7 @@ internal sealed class RingContactStateIngestor : IngestBase
                 Timestamp = DateTimeOffset.UtcNow,
                 Value = isClosed ? bool.FalseString : bool.TrueString,
             });
+            await SendNewDataMessageAsync(Models.Mqtt.NewDataEventTypes.SensorData);
             _logger.LogInformation("Successfully inserted Ring Contact State into database for sensor {SerialNumber}.", serialNumber);
         }
         catch (Exception ex)

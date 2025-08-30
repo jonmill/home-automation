@@ -1,6 +1,7 @@
 using HomeAutomation.Database;
 using HomeAutomation.Models.Database;
-using HomeAutomation.Mqtt.Services;
+using HomeAutomation.Models.Mqtt;
+using HomeAutomation.Models.Mqtt.Ingest;
 using LinqToDB;
 using MQTTnet;
 using System.Text.Json;
@@ -68,6 +69,7 @@ internal sealed class LoggingIngestor : IngestBase
                 Message = logEntry.Message ?? "[Null]",
                 Tag = logEntry.Tag ?? "[Null]",
             });
+            await SendNewDataMessageAsync(NewDataEventTypes.LogEvent);
             _logger.LogInformation("Successfully inserted log entry for board {BoardId} at {Timestamp}.", logEntry.BoardId, logEntry.Timestamp);
         }
         catch (Exception ex)

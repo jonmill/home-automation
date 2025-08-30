@@ -1,7 +1,7 @@
 using HomeAutomation.Database;
 using HomeAutomation.Models.Database;
+using HomeAutomation.Models.Mqtt.Ingest;
 using HomeAutomation.Models.Mqtt.Ring;
-using HomeAutomation.Mqtt.Services;
 using LinqToDB;
 using MQTTnet;
 using System.Text.Json;
@@ -77,6 +77,7 @@ internal sealed class RingBoardAttributesIngestor : IngestBase
                 BatteryLevel = boardState.BatteryLevel,
                 LastUpdated = boardState.LastUpdate 
             });
+            await SendNewDataMessageAsync(Models.Mqtt.NewDataEventTypes.RingMetadata);
             _logger.LogInformation("Successfully inserted heartbeat & battery info for Ring Board {SerialNumber}", serialNumber);
         }
         catch (Exception ex)

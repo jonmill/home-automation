@@ -4,15 +4,18 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>HomeAutomation.Models</AssemblyName>
+    <AssemblyName>HomeAutomation.MqttExtensions</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentMigrator" Version="7.1.0" />
-    <PackageReference Include="linq2db" Version="6.0.0-rc.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.3.0" />
+    <ProjectReference Include="../Models/Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MQTTnet" Version="5.0.1.1416" />
     <PackageReference Include="Polly.Core" Version="8.6.2" />
+    <PackageReference Include="Polly.Extensions" Version="8.6.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.3.0" />
   </ItemGroup>
 
 </Project>

@@ -4,16 +4,21 @@ namespace HomeAutomation.Web.Components.Helpers;
 
 public static class DateTimeHelpers
 {
-    public static (string text, string color) ToFriendlyStringWithTimeBasedColor(DateTimeOffset? dateTime)
+    public static (string text, string color) ToFriendlyStringWithTimeBasedColor(DateTimeOffset? dateTime, DateTimeOffset? nextTime)
     {
         string text = GetFriendlyTimeString(dateTime);
-        string color = GetFriendlyDateColorByTime(dateTime);
+        string color = GetFriendlyDateColorByTime(dateTime, nextTime);
         return (text, color);
     }
 
     public static string GetFriendlyTimeString(DateTimeOffset? dateTime)
     {
-        TimeSpan ago = DateTimeOffset.Now - (dateTime ?? DateTimeOffset.MinValue);
+        if (dateTime is null)
+        {
+            return "Unknown";
+        }
+
+        TimeSpan ago = DateTimeOffset.Now - dateTime.Value;
         int minutesSince = (int)ago.TotalMinutes;
         int hoursSince = (int)ago.TotalHours;
         int daysSince = (int)ago.TotalDays;
@@ -47,39 +52,53 @@ public static class DateTimeHelpers
         }
     }
 
-    private static string GetFriendlyDateColorByTime(DateTimeOffset? dateTime)
+    private static string GetFriendlyDateColorByTime(DateTimeOffset? dateTime, DateTimeOffset? nextTime)
     {
-        TimeSpan ago = DateTimeOffset.Now - (dateTime ?? DateTimeOffset.MinValue);
-        int minutesSince = (int)ago.TotalMinutes;
-        int hoursSince = (int)ago.TotalHours;
-        int daysSince = (int)ago.TotalDays;
-        if (daysSince > 0)
+        if (dateTime is null)
         {
-            return Colors.Red.Darken4;
+            return Colors.Gray.Darken1;
         }
-        else if (hoursSince > 0)
+
+        if (nextTime.HasValue == false)
         {
-            return Colors.Orange.Darken4;
+            nextTime = dateTime?.AddMinutes(1) ?? DateTimeOffset.Now.AddMinutes(1);
         }
-        else if (minutesSince >= 30)
+
+        if (DateTimeOffset.Now > nextTime.Value)
         {
-            return Colors.Yellow.Darken4;
-        }
-        else if (minutesSince >= 2)
-        {
-            return Colors.Yellow.Lighten1;
-        }
-        else if (minutesSince == 1)
-        {
-            return Colors.Yellow.Lighten1;
-        }
-        else if (minutesSince < 1)
-        {
-            return Colors.Green.Darken1;
+            TimeSpan overdue = DateTimeOffset.Now - nextTime.Value;
+            if (overdue.TotalDays >= 1)
+            {
+                return Colors.Red.Darken4;
+            }
+            else if (overdue.TotalHours >= 1)
+            {
+                return Colors.Orange.Darken4;
+            }
+            else if (overdue.TotalMinutes >= 30)
+            {
+                return Colors.Yellow.Darken4;
+            }
+            else if (overdue.TotalMinutes >= 2)
+            {
+                return Colors.Yellow.Lighten1;
+            }
+            else if (overdue.TotalMinutes == 1)
+            {
+                return Colors.Green.Lighten1;
+            }
+            else if (overdue.TotalMinutes < 1)
+            {
+                return Colors.Green.Darken1;
+            }
+            else
+            {
+                return Colors.Gray.Darken1;
+            }
         }
         else
         {
-            return Colors.Gray.Darken1;
+            return Colors.Green.Darken1;
         }
     }
 }

@@ -1,12 +1,15 @@
 using HomeAutomation.Models.Mqtt.Serializers;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using MQTTnet;
 using Polly;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace HomeAutomation.Mqtt.Ingestors;
+namespace HomeAutomation.Models.Mqtt.Ingest;
 
-internal abstract class IngestBase : IHostedService, IAsyncDisposable
+public abstract class IngestBase : IHostedService, IAsyncDisposable
 {
     private readonly MqttClientOptions _options;
     private readonly MqttClientFactory _clientFactory;
@@ -98,6 +101,31 @@ internal abstract class IngestBase : IHostedService, IAsyncDisposable
             await _client.DisconnectAsync(MqttClientDisconnectOptionsReason.NormalDisconnection, cancellationToken: token);
         }, cancellationToken);
         _logger.LogInformation("Unsubscribed from {Topic} and disconnected.", _subscriptionOptions.TopicFilters.First().Topic);
+    }
+
+    protected async Task SendNewDataMessageAsync(NewDataEventTypes dataType)
+    {
+        if (_client is null)
+        {
+            _logger.LogWarning("MqttClient is not initialized in SendNewDataMessageAsync");
+            return;
+        }
+
+        MqttApplicationMessage message = new MqttApplicationMessageBuilder()
+            .WithTopic("subscriptions/new-data")
+            .WithPayload(JsonSerializer.Serialize(new NewData { EventType = dataType }, _serializationOptions))
+            .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
+            .Build();
+
+        using IServiceScope scope = _serviceScopeFactory.CreateScope();
+        ResiliencePipeline pipeline = scope.ServiceProvider.GetRequiredKeyedService<ResiliencePipeline>("mqtt-pipeline");
+        await pipeline.ExecuteAsync(async token =>
+        {
+            _logger.LogDebug("Publishing MQTT message to {Topic}", message.Topic);
+            await _client.PublishAsync(message, token);
+            _logger.LogDebug("Published MQTT message to {Topic}", message.Topic);
+        }, CancellationToken.None);
+
     }
 
     private async Task InternalOnMessageReceived(MqttApplicationMessageReceivedEventArgs e)

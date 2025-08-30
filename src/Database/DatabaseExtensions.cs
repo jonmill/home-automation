@@ -42,6 +42,8 @@ public static class DatabaseExtensions
                 })
                 .AddLogging(lb => lb.AddSerilog());
 
+        services.AddSingleton<IDatabaseCache, DatabaseCache>();
+
         return services;
     }
 

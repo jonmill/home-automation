@@ -1,6 +1,7 @@
 using HomeAutomation.Database;
 using HomeAutomation.Models.Database;
-using HomeAutomation.Mqtt.Services;
+using HomeAutomation.Models.Mqtt;
+using HomeAutomation.Models.Mqtt.Ingest;
 using LinqToDB;
 using MQTTnet;
 using System.Text.Json;
@@ -56,21 +57,22 @@ internal sealed class BoardHeartbeatIngestor : IngestBase
         }
 
         try
+        {
+            _logger.LogInformation("Inserting heartbeat into database: {Heartbeat}", heartbeat);
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            using HomeAutomationDb dbContext = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
+            await dbContext.InsertAsync(new Models.Database.Heartbeat
             {
-                _logger.LogInformation("Inserting heartbeat into database: {Heartbeat}", heartbeat);
-                using IServiceScope scope = _serviceScopeFactory.CreateScope();
-                using HomeAutomationDb dbContext = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
-                await dbContext.InsertAsync(new Models.Database.Heartbeat
-                {
-                    BoardSerialNumber = heartbeat.BoardId.ToString(),
-                    Timestamp = heartbeat.Timestamp,
-                    NextExpectedHeartbeat = heartbeat.Timestamp.AddSeconds(heartbeat.NextExpectedHeartbeatInSeconds),
-                });
-                _logger.LogInformation("Successfully inserted heartbeat for board {BoardId} at {Timestamp}.", heartbeat.BoardId, heartbeat.Timestamp);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to insert heartbeat into database.");
-            }
+                BoardSerialNumber = heartbeat.BoardId.ToString(),
+                Timestamp = heartbeat.Timestamp,
+                NextExpectedHeartbeat = heartbeat.Timestamp.AddSeconds(heartbeat.NextExpectedHeartbeatInSeconds),
+            });
+            await SendNewDataMessageAsync(NewDataEventTypes.Heartbeat);
+            _logger.LogInformation("Successfully inserted heartbeat for board {BoardId} at {Timestamp}.", heartbeat.BoardId, heartbeat.Timestamp);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to insert heartbeat into database.");
+        }
     }
 }

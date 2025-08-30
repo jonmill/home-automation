@@ -1,6 +1,7 @@
 ﻿@namespace HomeAutomation.Web.Components.Pages
 
 @page "/"
+@inherits BasePage
 @using HomeAutomation.Database
 @using HomeAutomation.Models.Database
 @using HomeAutomation.Models.Enums
@@ -175,13 +176,12 @@
     [Inject]
     private IJSRuntime JS { get; set; } = null!;
 
-    private Timer _refreshTimer = null!;
     private bool _isRefreshing = false;
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshDataAsync();
-        _refreshTimer = new Timer(OnTimerCallback, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+        UserSession.OnDataUpdated += RefreshDataAsync;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -190,11 +190,6 @@
         {
             await JS.InvokeVoidAsync("enablePush");
         }
-    }
-
-    private void OnTimerCallback(object? state)
-    {
-        RefreshDataAsync().GetAwaiter().GetResult();
     }
 
     private async Task RefreshDataAsync()
