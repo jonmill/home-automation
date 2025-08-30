@@ -15,12 +15,12 @@
     <ProjectReference Include="../Database/Database.csproj" />
     <ProjectReference Include="../Models/Models.csproj" />
     <ProjectReference Include="../MqttExtensions/MqttExtensions.csproj" />
+    <ProjectReference Include="../PushExtensions/PushExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentMigrator.Runner" Version="7.1.0" />
     <PackageReference Include="FluentMigrator.Runner.Postgres" Version="7.1.0" />
-    <PackageReference Include="Lib.Net.Http.WebPush" Version="3.3.1" />
     <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />

@@ -1,7 +1,7 @@
 using HomeAutomation.Database;
 using HomeAutomation.Models.Database;
-using HomeAutomation.Models.Mqtt.Ingest;
 using HomeAutomation.Models.Mqtt.Ring;
+using HomeAutomation.MqttExtensions;
 using LinqToDB;
 using MQTTnet;
 using System.Text.Json;
@@ -71,14 +71,18 @@ internal sealed class RingBoardAttributesIngestor : IngestBase
                 NextExpectedHeartbeat = boardState.LastUpdate.AddHours(6), // Ring comms every 4-6 hours
                 Timestamp = boardState.LastUpdate,
             });
+            _logger.LogInformation("Successfully inserted heartbeat & battery info for Ring Board {SerialNumber}", serialNumber);
+
             await db.InsertAsync<BoardBatteryInfo>(new BoardBatteryInfo()
             {
                 BoardId = board.Id,
                 BatteryLevel = boardState.BatteryLevel,
-                LastUpdated = boardState.LastUpdate 
+                LastUpdated = boardState.LastUpdate
             });
+            _logger.LogInformation("Successfully inserted battery info for Ring Board {SerialNumber}", serialNumber);
+
             await SendNewDataMessageAsync(Models.Mqtt.NewDataEventTypes.RingMetadata);
-            _logger.LogInformation("Successfully inserted heartbeat & battery info for Ring Board {SerialNumber}", serialNumber);
+            _logger.LogInformation("Successfully sent new data message for Ring Board {SerialNumber}", serialNumber);
         }
         catch (Exception ex)
         {

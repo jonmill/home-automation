@@ -3,7 +3,11 @@ self.addEventListener('push', event => {
   const title = data.title || 'New message';
   const options = {
     body: data.body || '',
-    icon: '/favicon-192x192.png',
+    icon: 'https://home.jokora.dev/favicon-192x192.png',
+    badge: 'https://home.jokora.dev/favicon-64x64.png',
+    renotify: true,
+    tag: data.tag,
+    vibrate: [200, 100, 300],
     data
   };
   event.waitUntil(self.registration.showNotification(title, options));

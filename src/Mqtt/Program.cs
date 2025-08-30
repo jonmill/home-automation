@@ -2,6 +2,7 @@ using HomeAutomation.Database;
 using HomeAutomation.Mqtt.Ingestors.Boards;
 using HomeAutomation.Mqtt.Ingestors.Sensors;
 using HomeAutomation.MqttExtensions;
+using HomeAutomation.PushExtensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddHostedService<SensorDataIngestor>()
                 .AddHostedService<RingContactStateIngestor>();
 
 builder.Services.AddHomeAutomationDatabase(builder.Configuration);
+builder.Services.AddPushNotifications(builder.Configuration);
 
 WebApplication app = builder.Build();
 

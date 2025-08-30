@@ -12,19 +12,5 @@
         <MudTooltip Text="Sensors">
             <MudNavLink Href="/sensors" Icon="@Icons.Material.Filled.Sensors">Sensors</MudNavLink>
         </MudTooltip>
-        <button id="enable-push" class="hidden">Enable notifications</button>
-        <div id="push-denied" class="hidden">
-            Notifications are blocked. On iOS: Settings → Notifications → [Your Web App] → Allow.
-            Otherwise: browser site settings → Allow notifications.
-        </div>
-        <div id="push-unsupported" class="hidden">
-            This browser/device doesn't support Web Push in this context.
-        </div>
-
-        <style>
-            .hidden {
-                display: none !important
-            }
-        </style>
     </MudStack>
 </MudNavMenu>

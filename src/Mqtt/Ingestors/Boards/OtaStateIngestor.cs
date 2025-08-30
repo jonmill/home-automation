@@ -1,4 +1,4 @@
-using HomeAutomation.Models.Mqtt.Ingest;
+using HomeAutomation.MqttExtensions;
 using MQTTnet;
 
 namespace HomeAutomation.Mqtt.Ingestors.Boards;

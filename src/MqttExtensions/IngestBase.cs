@@ -1,3 +1,4 @@
+using HomeAutomation.Models.Mqtt;
 using HomeAutomation.Models.Mqtt.Serializers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,7 +8,7 @@ using Polly;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace HomeAutomation.Models.Mqtt.Ingest;
+namespace HomeAutomation.MqttExtensions;
 
 public abstract class IngestBase : IHostedService, IAsyncDisposable
 {

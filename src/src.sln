@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MqttExtensions", "MqttExtensions\MqttExtensions.csproj", "{EA665DC3-8E8E-477E-9E63-9FF2FFDEE849}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushExtensions", "PushExtensions\PushExtensions.csproj", "{A6E36115-0644-454B-97D7-8A48C1B92F17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{EA665DC3-8E8E-477E-9E63-9FF2FFDEE849}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA665DC3-8E8E-477E-9E63-9FF2FFDEE849}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA665DC3-8E8E-477E-9E63-9FF2FFDEE849}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6E36115-0644-454B-97D7-8A48C1B92F17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6E36115-0644-454B-97D7-8A48C1B92F17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6E36115-0644-454B-97D7-8A48C1B92F17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6E36115-0644-454B-97D7-8A48C1B92F17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

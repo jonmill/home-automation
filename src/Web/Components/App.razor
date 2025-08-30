@@ -95,7 +95,15 @@
             }
         }
 
-        async function enablePush() {
+        async function registerPush() {
+            await enablePush(false);
+        }
+
+        async function forceRegisterPush() {
+            await enablePush(true);
+        }
+
+        async function enablePush(forceEnable) {
 
             // Ask *inside* the click (required by iOS)
             const perm = await Notification.requestPermission();
@@ -110,7 +118,7 @@
 
             // Reuse if present; else create
             let sub = await sw.pushManager.getSubscription();
-            if (!sub) {
+            if (!sub || (forceEnable === true)) {
                 sub = await sw.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: await urlB64ToUint8Array('BOFb2zZdWxnq-nmHR97L6ENV4s8KJUybWzlroniT3PYeYNo1JifG-BgdFkedkg9AkHCfzEuDwGIXJQsnvpN5uNw')
@@ -126,6 +134,16 @@
 
             // Refresh UI: button should disappear now
             await updatePushUI();
+        }
+
+        window.getPushSubscription = async () => {
+            const reg = await navigator.serviceWorker.ready;
+            if (reg)
+            {
+                return JSON.stringify(await reg.pushManager.getSubscription());
+            }
+
+            return "";
         }
 
         document.getElementById('enable-push').addEventListener('click', () => {

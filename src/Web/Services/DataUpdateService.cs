@@ -1,6 +1,6 @@
 using HomeAutomation.Database;
 using HomeAutomation.Models.Mqtt;
-using HomeAutomation.Models.Mqtt.Ingest;
+using HomeAutomation.MqttExtensions;
 using MQTTnet;
 using System.Text.Json;
 

@@ -1,0 +1,67 @@
+@namespace HomeAutomation.Web.Components.Pages
+
+@page "/push"
+@using HomeAutomation.PushExtensions
+@using HomeAutomation.Web.Dtos
+
+<PageTitle>Push Notifications</PageTitle>
+
+<MudStack>
+    <MudText Typo="Typo.h3">Push Notifications</MudText>
+    <MudGrid Spacing="10">
+        <MudItem>
+            <button id="enable-push" class="hidden mud-button-root mud-button mud-button-filled mud-button-filled-primary mud-button-filled-size-medium mud-ripple" onclick="registerPush()">Enable notifications</button>
+        </MudItem>
+        <MudItem>
+            <button id="force-enable-push" class="mud-button-root mud-button mud-button-filled mud-button-filled-primary mud-button-filled-size-medium mud-ripple" onclick="forceRegisterPush()">Re-enable notifications</button>
+        </MudItem>
+        <MudItem>
+            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="TestNotificationAsync">Test Notification</MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <div id="push-denied" class="hidden">
+        Notifications are blocked. On iOS: Settings → Notifications → [Your Web App] → Allow.
+        Otherwise: browser site settings → Allow notifications.
+    </div>
+    <div id="push-unsupported" class="hidden">
+        This browser/device doesn't support Web Push in this context.
+    </div>
+</MudStack>
+
+<style>
+    .hidden {
+        display: none !important
+    }
+</style>
+
+@code {
+
+    [Inject]
+    private IPushNotifier PushNotifier { get; set; } = null!;
+
+    [Inject]
+    private IJSRuntime Javascript { get; set; } = null!;
+
+    [Inject]
+    private ISnackbar SnackbarProvider { get; set; } = null!;
+
+    public async Task TestNotificationAsync()
+    {
+        string subscription = await Javascript.InvokeAsync<string>("getPushSubscription");
+        if (string.IsNullOrEmpty(subscription))
+        {
+            SnackbarProvider.Add("No push subscription available. Please enable push notifications first.", Severity.Warning);
+            return;
+        }
+
+        SubscriptionDto? push = System.Text.Json.JsonSerializer.Deserialize<SubscriptionDto?>(subscription);
+        if (push is null)
+        {
+            SnackbarProvider.Add("No push subscription available. Please enable push notifications first.", Severity.Warning);
+            return;
+        }
+
+        await PushNotifier.NotifySpecificAsync(push.endpoint, push.keys.p256dh, push.keys.auth, "Test Notification", "This is a test notification from Home Automation.");
+    }
+}

@@ -16,6 +16,7 @@
     <ProjectReference Include="../Database/Database.csproj" />
     <ProjectReference Include="../Models/Models.csproj" />
     <ProjectReference Include="../MqttExtensions/MqttExtensions.csproj" />
+    <ProjectReference Include="../PushExtensions/PushExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

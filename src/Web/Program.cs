@@ -1,5 +1,6 @@
 using HomeAutomation.Database;
 using HomeAutomation.MqttExtensions;
+using HomeAutomation.PushExtensions;
 using HomeAutomation.Web.Components;
 using HomeAutomation.Web.Dtos;
 using HomeAutomation.Web.Services;
@@ -33,6 +34,8 @@ builder.Services.AddSingleton<ThemeService>();
 
 builder.Services.AddHomeAutomationDatabase(builder.Configuration);
 
+builder.Services.AddPushNotifications(builder.Configuration);
+
 WebApplication app = builder.Build();
 
 app.UseExceptionHandler("/Error", createScopeForErrors: true);
@@ -43,7 +46,7 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.MapPost("/api/subscriptions", async (SubscriptionDto sub, HomeAutomationDb db) =>
+app.MapPost("/api/subscriptions", async (SubscriptionDto sub, IDatabaseCache db) =>
 {
     if (string.IsNullOrEmpty(sub.endpoint) ||
         string.IsNullOrEmpty(sub.keys?.p256dh) ||
@@ -52,16 +55,10 @@ app.MapPost("/api/subscriptions", async (SubscriptionDto sub, HomeAutomationDb d
         return Results.BadRequest("Invalid subscription data.");
     }
 
-    HomeAutomation.Models.Database.PushSubscription? pushSubscription = await db.PushSubscriptions.SingleOrDefaultAsync(ps => ps.Endpoint == sub.endpoint.ToLower());
+    HomeAutomation.Models.Database.PushSubscription? pushSubscription = await db.GetPushSubscriptionAsync(sub.endpoint);
     if (pushSubscription is null)
     {
-        pushSubscription = new()
-        {
-            Endpoint = sub.endpoint.ToLower(),
-            P256dh = sub.keys.p256dh,
-            Auth = sub.keys.auth,
-        };
-        await db.InsertAsync(pushSubscription);
+        pushSubscription = await db.CreatePushSubscriptionAsync(sub.endpoint, sub.keys.p256dh, sub.keys.auth);
     }
 
     return Results.Ok();

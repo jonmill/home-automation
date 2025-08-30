@@ -1,7 +1,7 @@
 using HomeAutomation.Database;
 using HomeAutomation.Models.Database;
 using HomeAutomation.Models.Mqtt;
-using HomeAutomation.Models.Mqtt.Ingest;
+using HomeAutomation.MqttExtensions;
 using LinqToDB;
 using MQTTnet;
 using System.Text.Json;
