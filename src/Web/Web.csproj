@@ -7,7 +7,7 @@
     <AssemblyName>HomeAutomation.Web</AssemblyName>
     <LangVersion>preview</LangVersion>
     <UserSecretsId>46805548-c954-4b14-8f0d-e09e263614f7</UserSecretsId>
-    <Version>2.1.0</Version>
+    <Version>2.1.1</Version>
     <ContainerRepository>jonmill/home-automation/web</ContainerRepository>
     <ContainerImageTags>latest;$(Version)</ContainerImageTags>
   </PropertyGroup>
