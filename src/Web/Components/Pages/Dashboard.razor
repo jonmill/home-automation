@@ -187,14 +187,6 @@
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JS.InvokeVoidAsync("enablePush");
-        }
-    }
-
     private async Task RefreshDataAsync()
     {
         _isRefreshing = true;

@@ -15,8 +15,8 @@ public static class PushExtensions
     {
         services.AddPushServiceClient(options =>
         {
-            string pubKey = config.GetValue<string>("Push:PublicKey") ?? throw new KeyNotFoundException("Push:PublicKey not found in configuration");
-            string privateKey = config.GetValue<string>("Push:PrivateKey") ?? throw new KeyNotFoundException("Push:PrivateKey not found in configuration");
+            string pubKey = config.GetConnectionString("PushPublicKey") ?? throw new KeyNotFoundException("Push:PublicKey not found in configuration");
+            string privateKey = config.GetConnectionString("PushPrivateKey") ?? throw new KeyNotFoundException("Push:PrivateKey not found in configuration");
             options.AutoRetryAfter = true;
             options.DefaultTimeToLive = Convert.ToInt32(TimeSpan.FromDays(1).TotalSeconds);
             options.MaxRetriesAfter = 0;
