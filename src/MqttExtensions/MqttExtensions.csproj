@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>HomeAutomation.MqttExtensions</AssemblyName>
-    <Version>2.1.2</Version>
+    <Version>2.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.2.0"></a>
+## [2.2.0](https://www.github.com/jonmill/home-automation/releases/tag/v2.2.0) (2025-08-31)
+
+### Features
+
+* Moving push from Ingest to State Machine ([a87e9b9](https://www.github.com/jonmill/home-automation/commit/a87e9b9c5e431a8b459e6a8abf327cfa93436e56))
+
 <a name="2.1.2"></a>
 ## [2.1.2](https://www.github.com/jonmill/home-automation/releases/tag/v2.1.2) (2025-08-30)
 
