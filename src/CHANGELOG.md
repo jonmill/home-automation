@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.2.1"></a>
+## [2.2.1](https://www.github.com/jonmill/home-automation/releases/tag/v2.2.1) (2025-08-31)
+
+### Bug Fixes
+
+* Fixing build break ([122733f](https://www.github.com/jonmill/home-automation/commit/122733fbf26de4177b362a0175e767bc33279e7c))
+
 <a name="2.2.0"></a>
 ## [2.2.0](https://www.github.com/jonmill/home-automation/releases/tag/v2.2.0) (2025-08-31)
 
