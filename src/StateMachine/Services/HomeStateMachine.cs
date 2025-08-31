@@ -91,7 +91,7 @@ public sealed class HomeStateMachine : IngestBase
 
         try
         {
-            await _model.UpdateSensorStateAsync(sensor, !isClosed);
+            await _model.UpdateContactSensorStateAsync(sensor, !isClosed);
         }
         catch (Exception ex)
         {
@@ -129,7 +129,7 @@ public sealed class HomeStateMachine : IngestBase
 
         try
         {
-            await _model.UpdateSensorStateAsync(sensor, sensorData);
+            await _model.UpdateContactSensorStateAsync(sensor, sensorData);
         }
         catch (Exception ex)
         {

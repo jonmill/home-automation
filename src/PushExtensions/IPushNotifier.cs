@@ -10,8 +10,9 @@ public interface IPushNotifier
     /// </summary>
     /// <param name="title">The title of the notification</param>
     /// <param name="message">The message of the notification</param>
+    /// <param name="highPriority">Whether the notification is high priority</param>
     /// <returns>Returns an awaitable Task</returns>
-    Task NotifyAsync(string title, string message);
+    Task NotifyAsync(string title, string message, bool highPriority);
 
     /// <summary>
     /// Sends a push notification to a specific endpoint.

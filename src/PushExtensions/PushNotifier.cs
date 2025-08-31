@@ -20,12 +20,12 @@ public sealed class PushNotifier : IPushNotifier
         _logger = logger;
     }
 
-    public async Task NotifyAsync(string title, string message)
+    public async Task NotifyAsync(string title, string message, bool highPriority)
     {
         PushPayload payload = new()
         {
             Title = title,
-            Message = message
+            Message = message,
         };
         string payloadString = JsonSerializer.Serialize(payload);
         IEnumerable<Models.Database.PushSubscription> subscriptions = await _databaseCache.GetPushSubscriptionsAsync();
@@ -40,7 +40,10 @@ public sealed class PushNotifier : IPushNotifier
 
             try
             {
-                PushMessage msg = new(payloadString);
+                PushMessage msg = new(payloadString)
+                {
+                    Urgency = highPriority ? PushMessageUrgency.High : PushMessageUrgency.Normal
+                };
                 await _client.RequestPushMessageDeliveryAsync(pushSubscription, msg);
             }
             catch (Exception ex)
