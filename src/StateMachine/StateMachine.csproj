@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>HomeAutomation.StateMachine</AssemblyName>
     <UserSecretsId>46805548-c954-4b14-8f0d-e09e263614f7</UserSecretsId>
-    <Version>2.2.1</Version>
+    <Version>2.2.2</Version>
     <ContainerRepository>jonmill/home-automation/state-machine</ContainerRepository>
     <ContainerImageTags>latest;$(Version)</ContainerImageTags>
   </PropertyGroup>
