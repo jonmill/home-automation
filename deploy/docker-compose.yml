@@ -33,7 +33,22 @@ services:
     hostname: ingest
     restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT="Production"
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__MqttBroker=queue
+      - ConnectionStrings__MqttPassword=yiiJYKaPq9Y7UUhG694bK5Po43o9gCuu
+      - ConnectionStrings__HomeAutomationDb=Server=db;Port=5432;Database=homeautomation;User Id=homeauto;Password=homeauto;
+    depends_on:
+      - mosquitto
+      - postgres
+    networks:
+      - mqtt-net
+  state-machine:
+    image: ghcr.io/jonmill/home-automation/state-machine:latest
+    container_name: state-machine
+    hostname: state-machine
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__PushPublicKey=BOFb2zZdWxnq-nmHR97L6ENV4s8KJUybWzlroniT3PYeYNo1JifG-BgdFkedkg9AkHCfzEuDwGIXJQsnvpN5uNw
       - ConnectionStrings__PushPrivateKey=
       - ConnectionStrings__MqttBroker=queue
@@ -50,7 +65,7 @@ services:
     hostname: web
     restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT="Production"
+      - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__PushPublicKey=BOFb2zZdWxnq-nmHR97L6ENV4s8KJUybWzlroniT3PYeYNo1JifG-BgdFkedkg9AkHCfzEuDwGIXJQsnvpN5uNw
       - ConnectionStrings__PushPrivateKey=
       - ConnectionStrings__MqttBroker=queue

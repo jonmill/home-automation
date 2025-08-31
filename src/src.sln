@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MqttExtensions", "MqttExten
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushExtensions", "PushExtensions\PushExtensions.csproj", "{A6E36115-0644-454B-97D7-8A48C1B92F17}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateMachine", "StateMachine\StateMachine.csproj", "{AF45D29C-AF68-4365-8441-D2FD4F55DA56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{A6E36115-0644-454B-97D7-8A48C1B92F17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6E36115-0644-454B-97D7-8A48C1B92F17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6E36115-0644-454B-97D7-8A48C1B92F17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF45D29C-AF68-4365-8441-D2FD4F55DA56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF45D29C-AF68-4365-8441-D2FD4F55DA56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF45D29C-AF68-4365-8441-D2FD4F55DA56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF45D29C-AF68-4365-8441-D2FD4F55DA56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

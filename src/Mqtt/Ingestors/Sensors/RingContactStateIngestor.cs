@@ -1,30 +1,24 @@
 using HomeAutomation.Database;
 using HomeAutomation.Models.Database;
 using HomeAutomation.MqttExtensions;
-using HomeAutomation.PushExtensions;
-using Lib.Net.Http.WebPush;
 using LinqToDB;
 using MQTTnet;
-using Polly.CircuitBreaker;
 
 namespace HomeAutomation.Mqtt.Ingestors.Sensors;
 
 internal sealed class RingContactStateIngestor : IngestBase
 {
     private readonly IDatabaseCache _databaseCache;
-    private readonly IPushNotifier _pushClient;
 
     public RingContactStateIngestor(
         MqttClientOptions options,
         MqttClientFactory clientFactory,
         IServiceScopeFactory serviceScopeFactory,
         IDatabaseCache databaseCache,
-        IPushNotifier pushClient,
         ILogger<RingContactStateIngestor> logger)
         : base("ring/+/alarm/+/contact/state", "Ha-RingContactStateIngest", options, clientFactory, serviceScopeFactory, logger)
     {
         _databaseCache = databaseCache;
-        _pushClient = pushClient;
     }
 
     protected override async Task OnMessageReceived(string payload, MqttApplicationMessageReceivedEventArgs e)
@@ -63,11 +57,6 @@ internal sealed class RingContactStateIngestor : IngestBase
 
             await SendNewDataMessageAsync(Models.Mqtt.NewDataEventTypes.SensorData);
             _logger.LogInformation("Sent new data MQTT message for Ring Contact State of sensor {SerialNumber}.", serialNumber);
-
-            string title = $"Window {(isClosed ? "Closed" : "Open")}";
-            string message = $"{sensor.Name} is now {(isClosed ? "closed" : "open")}.";
-            await _pushClient.NotifyAsync(title, message);
-            _logger.LogInformation("Sent push notification for Ring Contact State of sensor {SerialNumber}.", serialNumber);
         }
         catch (Exception ex)
         {

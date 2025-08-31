@@ -34,5 +34,8 @@ jobs:
       - name: Build and Publish MQTT Ingest
         run: dotnet publish --configuration Release --os linux --arch x64 /t:PublishContainer -p ContainerRegistry=ghcr.io ./src/Mqtt/Mqtt.csproj
 
+      - name: Build and Publish State Machine
+        run: dotnet publish --configuration Release --os linux --arch x64 /t:PublishContainer -p ContainerRegistry=ghcr.io ./src/StateMachine/StateMachine.csproj
+
       - name: Build and Publish Web
         run: dotnet publish --configuration Release --os linux --arch x64 /t:PublishContainer -p ContainerRegistry=ghcr.io ./src/Web/Web.csproj

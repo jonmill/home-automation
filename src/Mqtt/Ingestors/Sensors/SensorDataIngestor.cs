@@ -1,7 +1,6 @@
 using HomeAutomation.Database;
 using HomeAutomation.Models.Database;
 using HomeAutomation.MqttExtensions;
-using HomeAutomation.PushExtensions;
 using LinqToDB;
 using MQTTnet;
 using System.Text.Json;
@@ -11,19 +10,16 @@ namespace HomeAutomation.Mqtt.Ingestors.Sensors;
 internal sealed class SensorDataIngestor : IngestBase
 {
     private readonly IDatabaseCache _databaseCache;
-    private readonly IPushNotifier _pushClient;
 
     public SensorDataIngestor(
         MqttClientOptions options,
         MqttClientFactory clientFactory,
         IServiceScopeFactory serviceScopeFactory,
         IDatabaseCache databaseCache,
-        IPushNotifier pushClient,
         ILogger<SensorDataIngestor> logger)
         : base("board/+/sensor/#", "Ha-SensorsIngest", options, clientFactory, serviceScopeFactory, logger)
     {
         _databaseCache = databaseCache;
-        _pushClient = pushClient;
     }
 
     protected override async Task OnMessageReceived(string payload, MqttApplicationMessageReceivedEventArgs e)
@@ -75,38 +71,6 @@ internal sealed class SensorDataIngestor : IngestBase
 
             await SendNewDataMessageAsync(Models.Mqtt.NewDataEventTypes.SensorData);
             _logger.LogInformation("Sent new data MQTT message for sensor data.");
-
-            string title = string.Empty;
-            string message = string.Empty;
-            if (sensor.Type == Models.Enums.SensorTypes.Contact)
-            {
-                title = $"Door {(sensorData.SensorValue == "1" ? "Opened" : "Closed")}";
-                message = $"Door {sensor.Name} is now {(sensorData.SensorValue == "1" ? "open" : "closed")}.";
-            }
-            else if ((sensor.Type == Models.Enums.SensorTypes.AirQuality) && (double.TryParse(sensorData.SensorValue, out double airQualityValue)) && (airQualityValue > 50))
-            {
-                title = "Air Quality Alert";
-
-                if (sensor.Id == 13)
-                {
-                    message = $"Nora's Room Air Quality now at {sensorData.SensorValue}.";
-                }
-                else
-                {
-                    message = $"{sensor.Name} Air Quality now at {sensorData.SensorValue}";
-                }
-            }
-            else if ((sensor.Type == Models.Enums.SensorTypes.Temperature) && (double.TryParse(sensorData.SensorValue, out double temperatureValue)) && (temperatureValue >= 23.88))
-            {
-                title = "High Temperature Alert";
-                message = $"{sensor.Name} Temperature now at {sensorData.SensorValue}.";
-            }
-
-            if ((string.IsNullOrEmpty(title) == false) && (string.IsNullOrEmpty(message) == false))
-            {
-                await _pushClient.NotifyAsync(title, message);
-                _logger.LogInformation("Sent push notification for sensor data: {Title}", title);
-            }
         }
         catch (Exception ex)
         {

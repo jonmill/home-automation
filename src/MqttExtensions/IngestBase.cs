@@ -21,8 +21,8 @@ public abstract class IngestBase : IHostedService, IAsyncDisposable
     protected readonly ILogger<IngestBase> _logger;
     private IMqttClient? _client;
 
-    public IngestBase(
-        string topic,
+#pragma warning disable CS8618 // This constructor will always be called via another that makes these non-null
+    private IngestBase(
         string clientId,
         MqttClientOptions options,
         MqttClientFactory clientFactory,
@@ -35,10 +35,6 @@ public abstract class IngestBase : IHostedService, IAsyncDisposable
         _clientFactory = clientFactory;
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
-        _subscriptionOptions = _clientFactory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(topic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce).Build();
-        _unsubscribeOptions = _clientFactory.CreateUnsubscribeOptionsBuilder()
-            .WithTopicFilter(topic).Build();
         _serializationOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
@@ -48,6 +44,44 @@ public abstract class IngestBase : IHostedService, IAsyncDisposable
             NumberHandling = JsonNumberHandling.AllowReadingFromString
         };
         _serializationOptions.Converters.Add(new DataPayloadSerializer());
+    }
+#pragma warning restore CS8618
+
+    public IngestBase(
+        string topic,
+        string clientId,
+        MqttClientOptions options,
+        MqttClientFactory clientFactory,
+        IServiceScopeFactory serviceScopeFactory,
+        ILogger<IngestBase> logger) : this(clientId, options, clientFactory, serviceScopeFactory, logger)
+    {
+        _subscriptionOptions = _clientFactory.CreateSubscribeOptionsBuilder()
+            .WithTopicFilter(topic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce).Build();
+        _unsubscribeOptions = _clientFactory.CreateUnsubscribeOptionsBuilder()
+            .WithTopicFilter(topic).Build();
+    }
+
+    public IngestBase(
+        IEnumerable<string> topics,
+        string clientId,
+        MqttClientOptions options,
+        MqttClientFactory clientFactory,
+        IServiceScopeFactory serviceScopeFactory,
+        ILogger<IngestBase> logger) : this(clientId, options, clientFactory, serviceScopeFactory, logger)
+    {
+        MqttClientSubscribeOptionsBuilder builder = _clientFactory.CreateSubscribeOptionsBuilder();
+        foreach (string topic in topics)
+        {
+            builder.WithTopicFilter(topic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+        }
+        _subscriptionOptions = builder.Build();
+
+        MqttClientUnsubscribeOptionsBuilder unsubscribeBuilder = _clientFactory.CreateUnsubscribeOptionsBuilder();
+        foreach (string topic in topics)
+        {
+            unsubscribeBuilder.WithTopicFilter(topic);
+        }
+        _unsubscribeOptions = unsubscribeBuilder.Build();
     }
 
     public async ValueTask DisposeAsync()
@@ -61,7 +95,7 @@ public abstract class IngestBase : IHostedService, IAsyncDisposable
         }
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public virtual async Task StartAsync(CancellationToken cancellationToken)
     {
         if (_client is null)
         {
