@@ -96,11 +96,10 @@ public sealed class DatabaseCache : IDatabaseCache
             return;
         }
 
-        string endpoint = subscriptionEndpoint.ToLower();
-        _pushSubscriptionCache.TryRemove(endpoint, out _);
+        _pushSubscriptionCache.TryRemove(subscriptionEndpoint, out _);
         using IServiceScope scope = _serviceScopeFactory.CreateScope();
         using HomeAutomationDb dbContext = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
-        await dbContext.PushSubscriptions.Where(s => s.Endpoint == endpoint).DeleteAsync();
+        await dbContext.PushSubscriptions.Where(s => s.Endpoint == subscriptionEndpoint).DeleteAsync();
     }
 
     /// <inheritdoc />
@@ -111,10 +110,9 @@ public sealed class DatabaseCache : IDatabaseCache
             throw new ArgumentException("Endpoint, p256dh, and auth must be provided to create a push subscription.");
         }
 
-        string endpointNormalized = endpoint.ToLower();
         PushSubscription subscription = new()
         {
-            Endpoint = endpointNormalized,
+            Endpoint = endpoint,
             P256dh = p256dh,
             Auth = auth,
         };
@@ -122,7 +120,7 @@ public sealed class DatabaseCache : IDatabaseCache
         using IServiceScope scope = _serviceScopeFactory.CreateScope();
         using HomeAutomationDb dbContext = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
         await dbContext.InsertAsync(subscription);
-        _pushSubscriptionCache.TryAdd(endpointNormalized, subscription);
+        _pushSubscriptionCache.TryAdd(endpoint, subscription);
 
         return subscription;
     }
@@ -130,19 +128,18 @@ public sealed class DatabaseCache : IDatabaseCache
     /// <inheritdoc />
     public async Task<PushSubscription?> GetPushSubscriptionAsync(string endpoint)
     {
-        string normalizedEndpoint = endpoint.ToLower();
-        if (_pushSubscriptionCache.TryGetValue(normalizedEndpoint, out PushSubscription? subscription))
+        if (_pushSubscriptionCache.TryGetValue(endpoint, out PushSubscription? subscription))
         {
             return subscription;
         }
 
         using IServiceScope scope = _serviceScopeFactory.CreateScope();
         using HomeAutomationDb dbContext = scope.ServiceProvider.GetRequiredService<HomeAutomationDb>();
-        subscription = await dbContext.PushSubscriptions.SingleOrDefaultAsync(s => s.Endpoint == normalizedEndpoint);
+        subscription = await dbContext.PushSubscriptions.SingleOrDefaultAsync(s => s.Endpoint == endpoint);
 
         if (subscription is not null)
         {
-            _pushSubscriptionCache.TryAdd(normalizedEndpoint, subscription);
+            _pushSubscriptionCache.TryAdd(endpoint, subscription);
         }
 
         return subscription;

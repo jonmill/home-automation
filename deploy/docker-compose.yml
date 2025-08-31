@@ -34,6 +34,8 @@ services:
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT="Production"
+      - ConnectionStrings__PushPublicKey=BOFb2zZdWxnq-nmHR97L6ENV4s8KJUybWzlroniT3PYeYNo1JifG-BgdFkedkg9AkHCfzEuDwGIXJQsnvpN5uNw
+      - ConnectionStrings__PushPrivateKey=
       - ConnectionStrings__MqttBroker=queue
       - ConnectionStrings__MqttPassword=yiiJYKaPq9Y7UUhG694bK5Po43o9gCuu
       - ConnectionStrings__HomeAutomationDb=Server=db;Port=5432;Database=homeautomation;User Id=homeauto;Password=homeauto;
@@ -49,6 +51,8 @@ services:
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT="Production"
+      - ConnectionStrings__PushPublicKey=BOFb2zZdWxnq-nmHR97L6ENV4s8KJUybWzlroniT3PYeYNo1JifG-BgdFkedkg9AkHCfzEuDwGIXJQsnvpN5uNw
+      - ConnectionStrings__PushPrivateKey=
       - ConnectionStrings__MqttBroker=queue
       - ConnectionStrings__MqttPassword=yiiJYKaPq9Y7UUhG694bK5Po43o9gCuu
       - ConnectionStrings__HomeAutomationDb=Server=db;Port=5432;Database=homeautomation;User Id=homeauto;Password=homeauto;
