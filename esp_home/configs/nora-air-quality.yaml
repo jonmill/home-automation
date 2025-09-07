@@ -17,40 +17,58 @@ i2c:
   scan: true
   id: bus_a
 
+bme68x_bsec2_i2c:
+  id: bme680_internal
+  i2c_id: bus_a
+  address: 0x77
+  model: bme680
+  operating_age: 4d
+  sample_rate: ulp
+  state_save_interval: 1h
+
 sensor:
-  - platform: bme680
-    address: 0x77
-    update_interval: 20min
-    iir_filter: 3x
+  - platform: bme68x_bsec2
+    bme68x_bsec2_id: bme680_internal
     temperature:
       id: air_temp
+      accuracy_decimals: 1
       on_value:
         then:
           - lambda: |-
               id(mqtt_event_helper_float)(id(make_sensor_topic)($air_temperature_sensor_id, "air_temperature"), x, "$air_temperature_sensor_id");
     pressure:
       id: air_pressure
+      accuracy_decimals: 1
       on_value:
         then:
           - lambda: |-
               id(mqtt_event_helper_float)(id(make_sensor_topic)($air_pressure_sensor_id, "air_pressure"), x, "$air_pressure_sensor_id");
     humidity:
       id: air_humidity
+      accuracy_decimals: 1
       on_value:
         then:
           - lambda: |-
               id(mqtt_event_helper_float)(id(make_sensor_topic)($air_humidity_sensor_id, "air_humidity"), x, "$air_humidity_sensor_id");
-    gas_resistance:
-      id: gas_resistance
+    iaq_accuracy:
+      id: iaq_accuracy
+      accuracy_decimals: 1
+    iaq_static:
+      id: iaq
+      accuracy_decimals: 1
       on_value:
         then:
           - lambda: |-
-              id(mqtt_event_helper_float)(id(make_sensor_topic)($organic_compounds_sensor_id, "air_quality"), log(x) + 0.04 * id(air_humidity).state, "$organic_compounds_sensor_id");
-  - platform: template
-    name: "BME680 Indoor Air Quality"
-    id: iaq
-    # calculation: comp_gas = log(R_gas[ohm]) + 0.04 log(Ohm)/%rh * hum[%rh]
-    lambda: |-
-      return log(id(gas_resistance).state) + 0.04 * id(air_humidity).state;
-    state_class: "measurement"
-    update_interval: 20min
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($organic_compounds_sensor_id, "air_quality"), x, "$organic_compounds_sensor_id");
+text_sensor:
+  - platform: bme68x_bsec2
+    bme68x_bsec2_id: bme680_internal
+    iaq_accuracy:
+      # IAQ accuracy as a text value of Stabilizing, Uncertain, Calibrating, Calibrated
+      name: "BME680 IAQ Accuracy"
+      on_value:
+        then:
+          - lambda: |-
+              if (id(mqtt_event_helper_logging)) {
+                id(mqtt_event_helper_logging)(id(make_board_topic)("logging"), std::string("BME680 AQI Accuracy: ") + x, 3, "BME680");
+              }

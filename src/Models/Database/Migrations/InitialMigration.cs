@@ -101,7 +101,8 @@ public sealed class InitialMigration : Migration
             .Row(new { SerialNumber = "3", Name = "Car Garage Door", OnBattery = false, AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
             .Row(new { SerialNumber = "4", Name = "Front House Environment", OnBattery = false, AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
             .Row(new { SerialNumber = "5", Name = "Downstairs Air Quality", OnBattery = false, AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
-            .Row(new { SerialNumber = "6", Name = "Nora Room Air Quality", OnBattery = false, AddedAt = DateTimeOffset.UtcNow, IsDeleted = false });
+            .Row(new { SerialNumber = "6", Name = "Nora Room Air Quality", OnBattery = false, AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
+            .Row(new { SerialNumber = "7", Name = "Garage Environment", OnBattery = false, AddedAt = DateTimeOffset.UtcNow, IsDeleted = false });
 
         Insert.IntoTable(TableNames.Sensors)
             .Row(new { SerialNumber = "1", Name = "Front Door", Type = (byte)SensorTypes.Contact, Unit = (byte)UnitsOfMeasure.Boolean, BoardSerialNumber = "1", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
@@ -120,10 +121,17 @@ public sealed class InitialMigration : Migration
             .Row(new { SerialNumber = "14", Name = "Nora Room Air Temperature", Type = (byte)SensorTypes.Temperature, Unit = (byte)UnitsOfMeasure.Celsius, BoardSerialNumber = "6", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
             .Row(new { SerialNumber = "15", Name = "Nora Room Air Pressure", Type = (byte)SensorTypes.Pressure, Unit = (byte)UnitsOfMeasure.Pascal, BoardSerialNumber = "6", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
             .Row(new { SerialNumber = "16", Name = "Nora Room Air Humidity", Type = (byte)SensorTypes.Humidity, Unit = (byte)UnitsOfMeasure.Percentage, BoardSerialNumber = "6", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
-            .Row(new { SerialNumber = "17", Name = "Front House Environment Temperature", Type = (byte)SensorTypes.Temperature, Unit = (byte)UnitsOfMeasure.Celsius, BoardSerialNumber = "4", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
+            .Row(new { SerialNumber = "17", Name = "Front House Environment Temperature", Type = (byte)SensorTypes.Temperature, Unit = (byte)UnitsOfMeasure.Celsius, BoardSerialNumber = "7", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
             .Row(new { SerialNumber = "18", Name = "Front House Environment Humidity", Type = (byte)SensorTypes.Humidity, Unit = (byte)UnitsOfMeasure.Percentage, BoardSerialNumber = "4", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
             .Row(new { SerialNumber = "19", Name = "Front House Environment Pressure", Type = (byte)SensorTypes.Pressure, Unit = (byte)UnitsOfMeasure.Pascal, BoardSerialNumber = "4", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
-            .Row(new { SerialNumber = "20", Name = "Garage Air Temperature", Type = (byte)SensorTypes.Temperature, Unit = (byte)UnitsOfMeasure.Celsius, BoardSerialNumber = "4", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false });
+            .Row(new { SerialNumber = "20", Name = "BME Front House Air Temperature", Type = (byte)SensorTypes.Temperature, Unit = (byte)UnitsOfMeasure.Celsius, BoardSerialNumber = "4", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
+            .Row(new { SerialNumber = "21", Name = "Front House Air Quality", Type = (byte)SensorTypes.AirQuality, Unit = (byte)UnitsOfMeasure.AirQualityIndex, BoardSerialNumber = "4", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
+            .Row(new { SerialNumber = "22", Name = "Front House Air Quality Confidence", Type = (byte)SensorTypes.AirQualityConfidence, Unit = (byte)UnitsOfMeasure.BoschAirQualityConfidence, BoardSerialNumber = "4", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
+            .Row(new { SerialNumber = "23", Name = "Garage Inside Environment Temperature", Type = (byte)SensorTypes.Temperature, Unit = (byte)UnitsOfMeasure.Celsius, BoardSerialNumber = "7", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
+            .Row(new { SerialNumber = "24", Name = "Garage Inside Environment Humidity", Type = (byte)SensorTypes.Humidity, Unit = (byte)UnitsOfMeasure.Percentage, BoardSerialNumber = "7", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false })
+            .Row(new { SerialNumber = "25", Name = "Garage Inside Environment Pressure", Type = (byte)SensorTypes.Pressure, Unit = (byte)UnitsOfMeasure.Pascal, BoardSerialNumber = "7", AddedAt = DateTimeOffset.UtcNow, IsDeleted = false });
+
+
 
         Insert.IntoTable(TableNames.Boards)
             .Row(new

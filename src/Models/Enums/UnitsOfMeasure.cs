@@ -44,4 +44,9 @@ public enum UnitsOfMeasure : byte
     /// Represents the air quality index.
     /// </summary>
     AirQualityIndex = 7,
+
+    /// <summary>
+    /// Bosch's proprietary air quality confidence measurement.
+    /// </summary>
+    BoschAirQualityConfidence = 8,
 }

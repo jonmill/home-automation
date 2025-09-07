@@ -7,76 +7,107 @@ substitutions:
   board_comment: ESP32 monitoring temperature, humidity, and pressure
   board_id: $front_house_environment_board_id
   temp_sensor_id: $front_house_environment_temp_sensor_id
-  humidity_sensor_id: $front_house_environment_humidity_sensor_id
-  pressure_sensor_id: $front_house_environment_pressure_sensor_id
-  garage_temp_sensor_id: $front_house_environment_garage_temp_sensor_id
+  air_humidity_sensor_id: $front_house_environment_humidity_sensor_id
+  air_pressure_sensor_id: $front_house_environment_pressure_sensor_id
+  air_quality_sensor_id: $front_house_environment_air_quality_sensor_id
+  air_quality_confidence_sensor_id: $front_house_environment_air_quality_confidence_sensor_id
+  bme_air_temp_sensor_id: $front_house_environment_bme_air_temp_sensor_id
+
 
 i2c:
-  sda: GPIO27
-  scl: GPIO26
+  sda: GPIO21
+  scl: GPIO22
   scan: true
   id: bus_a
   frequency: 400kHz
 
+bme68x_bsec2_i2c:
+  id: bme680_internal
+  i2c_id: bus_a
+  address: 0x77
+  model: bme680
+  operating_age: 4d
+  sample_rate: ulp
+  state_save_interval: 1h
+
 sensor:
-  - platform: ntc
-    id: outside_temp
-    sensor: resistance_sensor
-    calibration:
-      b_constant: 3380
-      reference_temperature: 25°C
-      reference_resistance: 10kOhm
-    on_value:
-        then:
-          - lambda: |-
-              id(mqtt_event_helper_float)(id(make_sensor_topic)($temp_sensor_id, "air_temperature"), x, "$temp_sensor_id");
-  - platform: resistance
-    id: resistance_sensor
-    sensor: source_sensor
-    configuration: DOWNSTREAM
-    resistor: 10kOhm
-    name: Resistance Sensor
-  - platform: adc
-    id: source_sensor
-    pin: GPIO33
-    attenuation: 12db
-    update_interval: never
-  - platform: bme280_i2c
+#  - platform: ntc
+#    id: outside_temp
+#    sensor: resistance_sensor
+#    calibration:
+#      b_constant: 3380
+#      reference_temperature: 25°C
+#      reference_resistance: 10kOhm
+#    on_value:
+#        then:
+#          - lambda: |-
+#              id(mqtt_event_helper_float)(id(make_sensor_topic)($temp_sensor_id, "air_temperature"), x, "$temp_sensor_id");
+#  - platform: resistance
+#    id: resistance_sensor
+#    sensor: source_sensor
+#    configuration: DOWNSTREAM
+#    resistor: 10kOhm
+#    name: Resistance Sensor
+#  - platform: adc
+#    id: source_sensor
+#    pin: GPIO19
+#    attenuation: 12db
+#    update_interval: never
+  - platform: bme68x_bsec2
+    bme68x_bsec2_id: bme680_internal
     temperature:
-      id: inside_temp
-      name: "BME280 Temperature"
+      id: air_temp
+      accuracy_decimals: 1
       on_value:
         then:
           - lambda: |-
-              id(mqtt_event_helper_float)(id(make_sensor_topic)($garage_temp_sensor_id, "air_temperature"), x, "$garage_temp_sensor_id");
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($bme_air_temp_sensor_id, "air_temperature"), x, "$bme_air_temp_sensor_id");
     pressure:
       id: air_pressure
-      name: "BME280 Pressure"
+      accuracy_decimals: 1
       on_value:
         then:
           - lambda: |-
-              id(mqtt_event_helper_float)(id(make_sensor_topic)($pressure_sensor_id, "air_pressure"), x, "$pressure_sensor_id");
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($air_pressure_sensor_id, "air_pressure"), x, "$air_pressure_sensor_id");
     humidity:
       id: air_humidity
-      name: "BME280 Humidity"
+      accuracy_decimals: 1
       on_value:
         then:
           - lambda: |-
-              id(mqtt_event_helper_float)(id(make_sensor_topic)($humidity_sensor_id, "air_humidity"), x, "$humidity_sensor_id");
-    address: 0x76
-    update_interval: 60min
-    iir_filter: 2x
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($air_humidity_sensor_id, "air_humidity"), x, "$air_humidity_sensor_id");
+    iaq_accuracy:
+      id: iaq_accuracy
+      accuracy_decimals: 1
+      on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($air_quality_confidence_sensor_id, "air_quality_confidence"), x, "$air_quality_confidence_sensor_id");
+    iaq_static:
+      id: iaq
+      accuracy_decimals: 1
+      on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($air_quality_sensor_id, "air_quality"), x, "$air_quality_sensor_id");
+text_sensor:
+  - platform: bme68x_bsec2
+    bme68x_bsec2_id: bme680_internal
+    iaq_accuracy:
+      # IAQ accuracy as a text value of Stabilizing, Uncertain, Calibrating, Calibrated
+      name: "BME680 IAQ Accuracy"
 
-switch:
-  - platform: gpio
-    pin: GPIO32
-    id: ntc_vcc
+#switch:
+#  - platform: gpio
+#    pin: GPIO18
+#    id: ntc_vcc
 
-interval:
-  - interval: 60min
-    then:
-      - switch.turn_on: ntc_vcc
-      - delay: 2s
-      - component.update: source_sensor
-      - delay: 1s
-      - switch.turn_off: ntc_vcc
+#interval:
+#  - interval: 60min
+#    then:
+#      - switch.turn_on: ntc_vcc
+#      - delay: 2s
+#      - component.update: source_sensor
+#      - delay: 1s
+#      - switch.turn_off: ntc_vcc
+

@@ -1,0 +1,84 @@
+packages:
+  ids: !include ./base/ids.yaml
+  esp: !include ./base/esp-wroom.yaml
+
+substitutions:
+  board_name: garage-environment
+  board_comment: ESP32 monitoring temperature, humidity, and pressure
+  board_id: $garage_environment_board_id
+  temp_sensor_id: $garage_outside_environment_temp_sensor_id
+  air_humidity_sensor_id: $garage_inside_environment_humidity_sensor_id
+  air_pressure_sensor_id: $garage_inside_environment_pressure_sensor_id
+  bme_air_temp_sensor_id: $garage_inside_environment_temp_sensor_id
+
+
+i2c:
+  sda: GPIO27
+  scl: GPIO26
+  scan: true
+  id: bus_a
+  frequency: 400kHz
+
+sensor:
+  - platform: ntc
+    id: outside_temp
+    sensor: resistance_sensor
+    calibration:
+      b_constant: 3380
+      reference_temperature: 25°C
+      reference_resistance: 10kOhm
+    on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($temp_sensor_id, "air_temperature"), x, "$temp_sensor_id");
+  - platform: resistance
+    id: resistance_sensor
+    sensor: source_sensor
+    configuration: DOWNSTREAM
+    resistor: 10kOhm
+    name: Resistance Sensor
+  - platform: adc
+    id: source_sensor
+    pin: GPIO33
+    attenuation: 12db
+    update_interval: never
+  - platform: bme280_i2c
+    address: 0x76
+    update_interval: 20min
+    iir_filter: "OFF"
+    temperature:
+      id: air_temp
+      accuracy_decimals: 1
+      on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($bme_air_temp_sensor_id, "air_temperature"), x, "$bme_air_temp_sensor_id");
+    pressure:
+      id: air_pressure
+      accuracy_decimals: 1
+      on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($air_pressure_sensor_id, "air_pressure"), x, "$air_pressure_sensor_id");
+    humidity:
+      id: air_humidity
+      accuracy_decimals: 1
+      on_value:
+        then:
+          - lambda: |-
+              id(mqtt_event_helper_float)(id(make_sensor_topic)($air_humidity_sensor_id, "air_humidity"), x, "$air_humidity_sensor_id");
+
+switch:
+  - platform: gpio
+    pin: GPIO32
+    id: ntc_vcc
+
+interval:
+  - interval: 60min
+    then:
+      - switch.turn_on: ntc_vcc
+      - delay: 2s
+      - component.update: source_sensor
+      - delay: 1s
+      - switch.turn_off: ntc_vcc
+

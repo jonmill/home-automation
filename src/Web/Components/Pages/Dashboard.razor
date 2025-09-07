@@ -201,22 +201,16 @@
 
     private async Task RefreshEnvironmentalDataAsync(HomeAutomationDb dbContext)
     {
-        SensorValue? outsideTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "17").OrderByDescending(sv
-        => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? outsideHumidity = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
-        "18").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? outsidePressure = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
-        "19").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? noraRoomAQI = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "13").OrderByDescending(sv
-        => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? noraRoomTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "14").OrderByDescending(sv
-        => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? noraRoomPressure = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
-        "15").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
-        SensorValue? noraRoomHumidity = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber ==
-        "16").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? outsideTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "17").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? outsideHumidity = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "18").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? outsidePressure = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "19").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? outsideAQI = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "21").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? noraRoomAQI = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "13").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? noraRoomTemp = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "14").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? noraRoomPressure = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "15").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
+        SensorValue? noraRoomHumidity = await dbContext.SensorValues.Where(sv => sv.SensorSerialNumber == "16").OrderByDescending(sv => sv.Timestamp).FirstOrDefaultAsync();
         NoraRoom = new EnvironmentData(noraRoomTemp, noraRoomHumidity, noraRoomPressure, noraRoomAQI);
-        Outside = new EnvironmentData(outsideTemp, outsideHumidity, outsidePressure, null);
+        Outside = new EnvironmentData(outsideTemp, outsideHumidity, outsidePressure, outsideAQI);
     }
 
     private async Task RefreshSecurityDataAsync(HomeAutomationDb dbContext)
@@ -224,14 +218,14 @@
         SecuritySensors.Clear();
 
         List<Sensor> sensors = await dbContext.Sensors.Where(s => (s.Type == SensorTypes.Contact) && (s.IsDeleted == false))
-                                                      .OrderBy(s => s.Name)
-                                                      .ToListAsync();
+        .OrderBy(s => s.Name)
+        .ToListAsync();
         foreach (Sensor sensor in sensors)
         {
             SensorValue? latestValue = await dbContext.SensorValues
-                .Where(sv => sv.SensorSerialNumber == sensor.SerialNumber)
-                .OrderByDescending(sv => sv.Timestamp)
-                .FirstOrDefaultAsync();
+            .Where(sv => sv.SensorSerialNumber == sensor.SerialNumber)
+            .OrderByDescending(sv => sv.Timestamp)
+            .FirstOrDefaultAsync();
             SecuritySensors.Add(new SecurityData(latestValue, sensor));
         }
     }
@@ -243,8 +237,10 @@
         List<Board> boards = await dbContext.Boards.Where(b => !b.IsDeleted).OrderBy(b => b.Name).ToListAsync();
         foreach (Board board in boards)
         {
-            BoardBatteryInfo? boardBatteryInfo = await dbContext.BoardBatteryInfos.Where(b => b.BoardId == board.Id).OrderByDescending(b => b.LastUpdated).FirstOrDefaultAsync();
-            Heartbeat? hb = await dbContext.Heartbeats.Where(h => h.BoardSerialNumber == board.SerialNumber).OrderByDescending(h => h.Timestamp).FirstOrDefaultAsync();
+            BoardBatteryInfo? boardBatteryInfo = await dbContext.BoardBatteryInfos.Where(b => b.BoardId ==
+            board.Id).OrderByDescending(b => b.LastUpdated).FirstOrDefaultAsync();
+            Heartbeat? hb = await dbContext.Heartbeats.Where(h => h.BoardSerialNumber == board.SerialNumber).OrderByDescending(h =>
+            h.Timestamp).FirstOrDefaultAsync();
             Heartbeats.Add(new HeartbeatData(board, hb, boardBatteryInfo));
         }
     }

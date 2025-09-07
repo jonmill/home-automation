@@ -49,4 +49,9 @@ public enum SensorTypes : byte
     /// An air quality measurement
     /// </summary>
     AirQuality = 8,
+
+    /// <summary>
+    /// An air quality confidence measurement
+    /// </summary>
+    AirQualityConfidence = 9,
 }
