@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>HomeAutomation.MqttExtensions</AssemblyName>
-    <Version>2.2.2</Version>
+    <Version>2.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
